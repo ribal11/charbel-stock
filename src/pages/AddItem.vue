@@ -17,7 +17,7 @@
 
         <div class="form-control">
           <label for="qty">Quantity</label>
-          <q-input square outlined v-model="item.qty" class="input" id="qty" />
+          <q-input square outlined v-model="item.qty" class="input" id="qty" type="number" />
         </div>
         <div class="form-control">
           <label for="supp">Supplier</label>
@@ -50,39 +50,49 @@ const item = reactive({
   supplier: "",
 });
 //temporary
-// function addForm(){
-//     console.log(item);
-//     router.push('/home');
-// }
-
-
-
-async function addForm(){
-  if(item.id == '' || item.category == '' || item.name == '' || item.qty == '' || item.supplier == ''){
-    $q.dialog({
-      title: "Alert",
-      message: "Please fill in all the fields.",
-    }).onOk(() => {
-      console.log("OK");
-    });
-  } else {
-    try{
-        const response = await fetch('https://localhost:3000/api/add',{
-            method:'post',
-            headers: { "Content-Type": "application/json" },
-            body:JSON.stringify(item),
-        })
-        if(response.ok){
-            router.push('/home');
-        } else {
-          const errorText = await response.text();
-          console.log(`Error: ${response.status} - ${errorText}`);
-        }
-    } catch(err){
-        console.log(err);
-    }
-  }
+function addForm(){
+    console.log(item);
+    router.push('/home');
 }
+
+
+
+
+//Add items to the stock using db
+
+// async function addForm(){
+//   if(item.id == '' || item.category == '' || item.name == '' || item.qty == '' || item.supplier == ''){
+//     $q.dialog({
+//       title: "Alert",
+//       message: "Please fill in all the fields.",
+//     }).onOk(() => {
+//       console.log("OK");
+//     });
+//    } else if(item.qty < 0) {
+//     $q.dialog({
+//       title:"Error!",
+//       message:"quantity can't be negative"
+//     }).onOk(() => {
+//       console.log("Ok");
+//     })
+//    } else {
+//     try{
+//         const response = await fetch('https://localhost:3000/api/add',{
+//             method:'post',
+//             headers: { "Content-Type": "application/json" },
+//             body:JSON.stringify(item),
+//         })
+//         if(response.ok){
+//             router.push('/home');
+//         } else {
+//           const errorText = await response.text();
+//           console.log(`Error: ${response.status} - ${errorText}`);
+//         }
+//     } catch(err){
+//         console.log(err);
+//     }
+//   }
+// }
 </script>
 
 <style scoped>

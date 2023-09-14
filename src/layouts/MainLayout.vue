@@ -25,7 +25,7 @@
           v-ripple
           to="/"
           exact
-          :class="active === 'home' ? 'grey' : ''"
+          :class="{ 'grey': $route.name === 'home' }"
         >
           <q-item-section> Stock View </q-item-section>
         </q-item>
@@ -34,9 +34,9 @@
           clickable
           @click="createBill()"
           v-ripple
-          to="/"
+          to="/home/check"
           exact
-          :class="active === 'bill' ? 'grey' : ''"
+          :class="{ 'grey': $route.name === 'bill' }"
         >
           <q-item-section> Create Bill </q-item-section>
         </q-item>
@@ -47,7 +47,7 @@
           v-ripple
           to="/"
           exact
-          :class="active === 'buy' ? 'grey' : ''"
+          :class="{ 'grey': $route.name === 'buy' }"
         >
           <q-item-section> Buy </q-item-section>
         </q-item>

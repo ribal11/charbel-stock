@@ -3,25 +3,25 @@
     <base-card>
       <form @submit.prevent="updateForm">
         <div class="form-control">
-          <label for="">Serial No</label>
-          <q-input square outlined v-model="item.id" class="input" value />
+          <label for="sn">Serial No</label>
+          <q-input square outlined v-model="item.id" class="input" id="sn" />
         </div>
         <div class="form-control">
-          <label for="">Category</label>
-          <q-input square outlined v-model="item.category" class="input" />
+          <label for="cat">Category</label>
+          <q-input square outlined v-model="item.category" class="input" id="cat" />
         </div>
         <div class="form-control">
-          <label for="">Name</label>
-          <q-input square outlined v-model="item.name" class="input" />
+          <label for="name">Name</label>
+          <q-input square outlined v-model="item.name" class="input" id="name" />
         </div>
 
         <div class="form-control">
-          <label for="">Quantity</label>
-          <q-input square outlined v-model="item.qty" class="input" />
+          <label for="qty">Quantity</label>
+          <q-input square outlined v-model="item.qty" class="input" id="qty" type="number" />
         </div>
         <div class="form-control">
-          <label for="">Supplier</label>
-          <q-input square outlined v-model="item.supplier" class="input" />
+          <label for="supp">Supplier</label>
+          <q-input square outlined v-model="item.supplier" class="input" id="supp" />
         </div>
         <q-btn
           align="center"
@@ -68,6 +68,7 @@ function updateForm(){
 
 
 
+//update the data in the db 
 
 // async function updateForm() {
 //   if(item.qty < 0){
@@ -94,6 +95,8 @@ function updateForm(){
 //   }
 // }
 // }
+
+//get the data of the item with this id
 
 // onMounted(async ()=>{
 //     try{

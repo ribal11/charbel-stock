@@ -47,7 +47,7 @@
 <script setup>
 
 import { onMounted, ref } from "vue";
-import {  useRouter } from 'vue-router';
+import {  onBeforeRouteUpdate, useRouter } from 'vue-router';
 
 
 const router = useRouter();
@@ -59,27 +59,25 @@ const columns = [
   {
     name: "ItemSerialNumber",
     align: "center",
-    label: "ItemSerialNumber",
+    label: "Item Serial Number",
     field: "ItemSerialNumber",
-    sortable: true,
   },
   {
     name: "ItemCategory",
-    label: "ItemCategory",
+    label: "Item Category",
     field: "ItemCategory",
-    sortable: true,
     align: "center",
   },
   {
     name: "ItemName",
-    label: "ItemName",
+    label: "Item Name",
     field: "ItemName",
     align: "center",
   },
-  { name: "ItemQty", label: "ItemQty", field: "ItemQty", align: "center" },
+  { name: "ItemQty", label: "Item Qty", field: "ItemQty", align: "center" },
   {
     name: "ItemSupplier",
-    label: "ItemSupplier",
+    label: "Item Supplier",
     field: "ItemSupplier",
     align: "center",
   },
@@ -124,6 +122,7 @@ function addItem(){
 
 
 
+//Delete the row in the db and in the row constante
 
 // async function handleDelete(row){
 
@@ -144,6 +143,8 @@ function addItem(){
 // }
 
 
+//Get the items data from the database to use them in the table
+
 // async function getData() {
 //   const api = 'route'
 //   try {
@@ -154,11 +155,21 @@ function addItem(){
 //     console.log("this is the error:" + err);
 //   }}
 
+
+//use getData function onMounted
+
 //   onMounted(() => {
 //   getData(); // Call the getData function when the component is mounted
 
 // }
 // });
+
+
+//reload the data from the database everytime we get back to this page 
+
+// onBeforeRouteUpdate(()=>{
+//   getData();
+// })
 
 </script>
 
