@@ -73,7 +73,7 @@ async function submitForm() {
 //       const response = await fetch(api, {
 //         method: "post",
 //         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify(requestData),
+//         body: JSON.stringify(data),
 //       });
 //       if (response.ok) {
 //         localStorage.setItem('token','code');
