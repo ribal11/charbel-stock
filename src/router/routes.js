@@ -25,7 +25,8 @@ const routes = [
       {path:'delete/:id',props:true, component: () => import('pages/EditItem.vue')},
       {path:'/home/add', component: () => import('pages/AddItem.vue')},
       {path:'/home/check',name:'bill', component: () => import('pages/CheckClient.vue')},
-      {path:'home/buy', name:'buy', component: () => import('pages/BuyItems.vue') }
+      {path:'/home/buy', name:'buy', component: () => import('pages/CreateBill.vue')},
+      
     ]
   },
 

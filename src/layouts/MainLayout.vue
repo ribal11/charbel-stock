@@ -45,7 +45,7 @@
           clickable
           @click="buy()"
           v-ripple
-          to="/"
+          to="/home/buy"
           exact
           :class="{ 'grey': $route.name === 'buy' }"
         >

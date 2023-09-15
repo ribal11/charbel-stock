@@ -63,7 +63,7 @@
         :columns="columnsStock"
         row-key="ItemSerialNumber"
         selection="multiple"
-        :selected-rows-label="getSelectedString"
+        
         v-model:selected="selected"
         virtual-scroll
         :rows-per-page-options="[0]"
@@ -95,10 +95,10 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import { useDialogPluginComponent, useQuasar } from "quasar";
 import {useRouter} from 'vue-router'
-import { data } from "autoprefixer";
+
 
 //emits for the dialog
 defineEmits([...useDialogPluginComponent.emits]);
@@ -294,6 +294,17 @@ function onDialogCancel() {
   dialogRef.value.hide();
 }
 
+//get the stock data from the db and put it in the rowsStock
+async function getStockData(){
+  try{
+    const response= await fetch('http://localhost/stock');
+    const data = await response.json();
+    rowsStock.value = data
+  } catch(err){
+    console.log(err);
+  }
+}
+
 //to see if we exeeded the quantity in the stock
 watch(
   () => rowsStock.value,
@@ -333,6 +344,11 @@ watch(
     }
   }
 );
+
+//get the stock data onMounted
+onMounted(async ()=>{
+  getStockData();
+})
 </script>
 
 <style scoped>
