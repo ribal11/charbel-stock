@@ -17,7 +17,7 @@
 
         <div class="form-control">
           <label for="qty">Quantity</label>
-          <q-input square outlined v-model="item.qty" class="input" id="qty" type="number" />
+          <q-input square outlined v-model="item.qty" class="input" id="qty" type="number" min="0" />
         </div>
         <div class="form-control">
           <label for="supp">Supplier</label>
@@ -38,7 +38,7 @@
 <script setup>
 import BaseCard from "src/components/UI/BaseCard.vue";
 import { useRouter } from "vue-router";
-import {  reactive } from "vue";
+import {  reactive, watch } from "vue";
 import { useQuasar } from "quasar";
  const router = useRouter()
  const $q = useQuasar()
@@ -57,6 +57,7 @@ function addForm(){
 
 
 
+// add the item in the db 
 
 // async function addForm(){
 //   if(item.id == '' || item.category == '' || item.name == '' || item.qty == '' || item.supplier == ''){
@@ -84,6 +85,12 @@ function addForm(){
 //     }
 //   }
 // }
+
+watch(()=>item.qty,(newQty,oldQty) => {
+  if (Number(newQty) < 0 || isNaN(newQty)){
+    item.qty = "0";
+  }
+})
 </script>
 
 <style scoped>

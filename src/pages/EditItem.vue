@@ -17,7 +17,7 @@
 
         <div class="form-control">
           <label for="qty">Quantity</label>
-          <q-input square outlined v-model="item.qty" class="input" id="qty" type="number" />
+          <q-input square outlined v-model="item.qty" class="input" id="qty" type="number" min="0" />
         </div>
         <div class="form-control">
           <label for="supp">Supplier</label>
@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted, reactive } from "vue";
+import { defineProps, onMounted, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import BaseCard from "src/components/UI/BaseCard.vue";
 import { useQuasar } from "quasar";
@@ -111,6 +111,12 @@ function updateForm(){
 //         console.log(err);
 //     }
 // })
+
+watch(() => item.qty,(newQty, oldQty) => {
+  if(Number(newQty) < 0 || isNaN(newQty)){
+    item.qty = "0";
+  }
+})
 </script>
 
 <style scoped>

@@ -219,14 +219,22 @@ function addItem() {
 
 //submit the fetoura
 //  async function handleAdd() {
-//   if (name.value === "") {
+//   if ( rowsClient.value.length === 0) {
 //     $q.dialog({
 //       title: "Alert",
-//       message: "Please enter the client's name",
+//       message: "you did not enter any item cancel the bill?",
+//       cancel:true,
+//     }).onOk(() => {
+//       router.push('/home');
+//     }).onCancel(()=> console.log('cancel'));
+//   } else if(name.value === ""){
+//   $q.dialog({
+//       title: "Alert",
+//       message: "Please enter the client's name ",
 //     }).onOk(() => {
 //       console.log("OK");
 //     });
-//   } else {
+// } else {
 //     const data ={
 //         name:name.value,
 //         itemsClient:rowsClient.value,
@@ -295,15 +303,15 @@ function onDialogCancel() {
 }
 
 //get the stock data from the db and put it in the rowsStock
-async function getStockData(){
-  try{
-    const response= await fetch('http://localhost/stock');
-    const data = await response.json();
-    rowsStock.value = data
-  } catch(err){
-    console.log(err);
-  }
-}
+// async function getStockData(){
+//   try{
+//     const response= await fetch('http://localhost/stock');
+//     const data = await response.json();
+//     rowsStock.value = data
+//   } catch(err){
+//     console.log(err);
+//   }
+// }
 
 //to see if we exeeded the quantity in the stock
 watch(
@@ -346,9 +354,9 @@ watch(
 );
 
 //get the stock data onMounted
-onMounted(async ()=>{
-  getStockData();
-})
+// onMounted(async ()=>{
+//   getStockData();
+// })
 </script>
 
 <style scoped>

@@ -11,9 +11,9 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-toolbar-title> Menu </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div><q-btn icon="logout" flat rounded @click="logout"></q-btn></div>
       </q-toolbar>
     </q-header>
 
@@ -61,27 +61,28 @@
 </template>
 
 <script setup>
+import { useQuasar } from "quasar";
+import {useRouter} from "vue-router"
 import { ref } from "vue";
 
 const leftDrawerOpen = ref(false);
 const active = ref("home");
-
-
+const $q = useQuasar()
+const router = useRouter();
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
-function createBill(){
-  active.value='bill';
-}
-
-function stockView(){
-  active.value='home';
-}
-
-function buy(){
-  active.value='buy'
+function logout(){
+  $q.dialog({
+    title:"Confirm",
+    message:"are you sure you want to logout?",
+    cancel:true
+  }).onOk(()=> {
+    localStorage.removeItem('token');
+    router.push('/login');
+  })
 }
 
 </script>

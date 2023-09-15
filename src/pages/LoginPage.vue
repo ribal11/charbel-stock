@@ -80,7 +80,7 @@ async function submitForm() {
 //         router.push('/home');
 //       } else {
 //         const errorData = await response.json();
-//         if (errorData === "Invalid credentials") {
+//         if (errorData === "wrong password") {
 //           $q.dialog({
 //             title: "Alert",
 //             message: "email or password wrong",

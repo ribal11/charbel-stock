@@ -214,14 +214,25 @@
   
   //submit the fetoura
   //  async function handleAdd() {
-  //   if (name.value === "") {
+  //   if ( rowsItemsBill.value.length === 0) {
   //     $q.dialog({
+  //       title: "Confirm",
+  //       message: " you did not enter any item cancel the bill?",
+  //       cancel:true
+  //     }).onOk(() => {
+        
+  //       router.push('/home')
+  //     }).onCancel(() => {
+  //       console.log('cancel');
+  //     });
+  //   } else if(name.value === "") {
+  //   $q.dialog({
   //       title: "Alert",
   //       message: "Please enter the client's name",
   //     }).onOk(() => {
   //       console.log("OK");
   //     });
-  //   } else {
+  // } else {
   //     const data ={
   //         name:name.value,
   //         itemsClient:rowsItemsBill.value,
