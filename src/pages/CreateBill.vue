@@ -43,6 +43,19 @@
               />
             </q-td>
           </template>
+
+          <template v-slot:body-cell-update="props">
+            <!-- Assuming props.row.delete contains the delete action -->
+            <q-td :props="props">
+              <q-btn
+                flat
+                round
+                color="primary"
+                icon="edit"
+                @click="handleUpdate(props.row)"
+              />
+            </q-td>
+          </template>
         </q-table>
         <div style="text-align: center; margin-top: 16px">
           <q-btn flat color="primary" @click="handleAdd"> Save </q-btn>
@@ -92,7 +105,7 @@
   <q-dialog ref="dialogRefUpdate">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <label for="id">Serial Number</label>
+        <label for="id" :class="!$q.platform.is.mobile?'label':''">Serial Number</label>
         <q-input
           v-model="getUpdate.ItemSerialNumber"
           debounce="500"
@@ -103,7 +116,7 @@
       </q-card-section>
 
       <q-card-section>
-        <label for="category">Category</label>
+        <label for="category" :class="!$q.platform.is.mobile?'label':''">Category</label>
         <q-input
           v-model="getUpdate.ItemCategory "
           debounce="500"
@@ -114,7 +127,7 @@
       </q-card-section>
 
       <q-card-section>
-        <label for="name">Name</label>
+        <label for="name" :class="!$q.platform.is.mobile?'label':''">Name</label>
         <q-input
           v-model="getUpdate.ItemName"
           debounce="500"
@@ -125,7 +138,7 @@
       </q-card-section>
 
       <q-card-section>
-        <label for="qty">Quantity</label>
+        <label for="qty" :class="!$q.platform.is.mobile?'label':''">Quantity</label>
         <q-input
           v-model="getUpdate.ItemQty"
           debounce="500"
@@ -685,6 +698,9 @@ label {
 p{
   margin: 0;
   padding: 0;
+}
+.label{
+  display: block;
 }
 
 </style>
