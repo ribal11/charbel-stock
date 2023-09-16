@@ -1,54 +1,104 @@
 <template>
   <LoadingComponent v-if="isLoading" />
   <div class="row justify-end">
-    <div class="col-1">
-      <q-btn color="primary" label="Add" class="q-my-sm" type="submit" @click="addItem" />
+    <div class="col-6 col-sm-3 text-right">
+      <q-btn color="primary" label="Add New Item" class="q-my-sm q-mr-sm" @click="addItem" />
     </div>
 
   </div>
 
-  <template v-if="!$q.platform.is.mobile">
-    <div class="q-pa-md">
 
-      <q-table class="table" style="height: auto" flat bordered title="Stock" :rows="rows" :columns="columns"
-        row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols">
-        <!-- Custom "update" and "delete" columns -->
-        <template v-slot:body-cell-update="props">
-          <!-- Assuming props.row.update contains the update action -->
-          <q-td :props="props">
-            <q-btn flat round color="primary" icon="edit" @click="handleUpdate(props.row)" />
-          </q-td>
+
+
+  <q-table class="table" style="height: auto" flat bordered title="Stock" :rows="filteredData" :columns="columns"
+    row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols" :grid="$q.platform.is.mobile">
+
+    <template v-slot:top-right>
+      <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="fltr_text" placeholder="Search">
+        <template v-slot:append>
+          <q-icon name="search" />
         </template>
+      </q-input>
+      <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter = !show_filter" flat />
+    </template>
+    <!-- Custom "update" and "delete" columns -->
+    <template v-if="!$q.platform.is.mobile" v-slot:body-cell-update="props">
+      <!-- Assuming props.row.update contains the update action -->
+      <q-td :props="props">
+        <q-btn flat round color="primary" icon="edit" @click="handleUpdate(props.row)" />
+      </q-td>
+    </template>
 
-        <template v-slot:body-cell-delete="props">
-          <!-- Assuming props.row.delete contains the delete action -->
-          <q-td :props="props">
-            <q-btn flat round color="primary" icon="delete" @click="handleDelete(props.row)" />
-          </q-td>
-        </template>
-      </q-table>
-    </div>
-  </template>
+    <template v-if="!$q.platform.is.mobile" v-slot:body-cell-delete="props">
+      <!-- Assuming props.row.delete contains the delete action -->
+      <q-td :props="props">
+        <q-btn flat round color="primary" icon="delete" @click="handleDelete(props.row)" />
+      </q-td>
+    </template>
 
-  <template v-else>
-    <div>
-      <q-card v-for="(item) in rows" :key="item.ItemSerialNumber">
-        <q-card-section v-for="(col, colIndex) in getCols" :key="colIndex" horizontal class="row">
-          <q-card-section class="col title">
-            {{ col.label }} :
+
+    <template v-if="$q.platform.is.mobile" v-slot:item="props">
+      <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+        <q-card flat bordered>
+          <q-card-section class="text-left">
+            <div class="row">
+              <span class="col-12  text-weight-bolder   ">
+                Serial Number
+              </span>
+              <span class="col-12">
+                {{ props.row.serno }}
+              </span>
+            </div>
+            <div class="row">
+              <span class="col-12  text-weight-bolder">
+                Category
+              </span>
+              <span class="col-12">
+                {{ props.row.cat }}
+              </span>
+            </div>
+            <div class="row">
+              <span class="col-12  text-weight-bolder">
+                Name
+              </span>
+              <span class="col-12">
+                {{ props.row.name }}
+              </span>
+            </div>
+
+
+            <div class="row">
+              <span class="col-12  text-weight-bolder">
+                Quantity
+              </span>
+              <span class="col-12">
+                {{ props.row.qty }}
+              </span>
+            </div>
+            <div class="row">
+              <span class="col-12  text-weight-bolder">
+                Supplier
+              </span>
+              <span class="col-12">
+                {{ props.row.supp }}
+              </span>
+            </div>
+
+
+            <div class="row q-mt-sm">
+              <span class="col-6 text-center">
+                <q-btn color="primary" label="Edit" icon="edit" size="sm" @click="handleUpdate(props.row)" />
+              </span>
+              <span class="col-6 text-center">
+                <q-btn color="negative" label="Delete" icon="delete_outline" size="sm" @click="handleDelete(props.row)" />
+              </span>
+            </div>
           </q-card-section>
-          <q-card-section class="col">
-            {{ item[col.field] }}
-          </q-card-section>
-        </q-card-section>
-        <q-card-actions class="row">
-          <q-btn flat class="col bg-green" @click="handleUpdate(item)">Update</q-btn>
-          <q-btn flat class="col bg-red" @click="handleDelete(item)">Delete</q-btn>
-        </q-card-actions>
-        <!-- Add other card content here -->
-      </q-card>
-    </div>
-  </template>
+        </q-card>
+      </div>
+    </template>
+
+  </q-table>
 </template>
 <script setup>
 
@@ -60,7 +110,8 @@ import ENV from "src/helpers/globals";
 import LoadingComponent from "src/components/LoadingComponent.vue";
 import { useStore } from "src/stores/store";
 import { storeToRefs } from "pinia";
-
+import { cloneDeep } from "lodash";
+import { customTableSearch } from "src/helpers/utils";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -69,6 +120,9 @@ const store = useStore();
 
 const { isLoading } = storeToRefs(store);
 const { setIsLoading } = store;
+
+const show_filter = ref(false);
+const fltr_text = ref('');
 
 const pagination = ref({
   rowsPerPage: 1000,
@@ -97,7 +151,7 @@ const columns = [
     name: "name",
     label: "Item Name",
     field: "name",
-    align: "center",
+    align: "left",
   },
   { name: "qty", label: "Item Qty", field: "qty", align: "center" },
   {
@@ -115,10 +169,11 @@ const rows = ref([]);
 function handleDelete(row) {
   $q.dialog({
     title: "Confirm",
-    message: 'Are you sure you want to delete this row?',
+    message: 'Are you sure you want to delete this stock Item?',
     cancel: true,
   }).onOk(() => {
-    rows.value = rows.value.filter((item) => item.ItemSerialNumber !== row.ItemSerialNumber)
+    // rows.value = rows.value.filter((item) => item.ItemSerialNumber !== row.ItemSerialNumber)
+    deleteItem(row.id);
   }).onCancel(() => {
     console.log('cancel');
   })
@@ -126,7 +181,7 @@ function handleDelete(row) {
 }
 
 function handleUpdate(row) {
-  router.push(`/home/delete/${row.id}`)
+  router.push(`/home/edit/${row.id}`)
 }
 function addItem() {
   router.push('/home/add');
@@ -175,56 +230,58 @@ const fetchData = async () => {
   }
 }
 
+const deleteItem = async (itemid) => {
+  try {
+    setIsLoading(true);
+
+    let resp = await fetch(`${ENV.HomeURL}/items/deleteItem?id=${itemid}`, { method: 'get', headers: { 'Accept': 'application/json' } });
+
+    if (!resp.ok) {
+      resp = await resp.text();
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: resp,
+      });
+    }
+    else {
+      // resp = await resp.json();
+      $q.notify({
+        color: "positive",
+        type: 'positive',
+        textColor: "white",
+        message: "Item Deleted Successfully",
+        timeout: 2000
+      });
+      fetchData()
+
+    }
 
 
-//Delete the row in the db and in the row constante
-
-// async function handleDelete(row){
-
-//   try{
-//     rows.value = rows.value.filter((item) => item.ItemSerialNumber !== row.ItemSerialNumber)
-//     const response =  await fetch(`https://localhost:300/api/delete/${row.ItemSerialNumber}`,{
-//       method:'delete'
-//     });
-//     if(response.ok){
-//       const error = new Error(
-//               "Error deleting task: Server response not okay"
-//             );
-//             throw error;
-//     }
-//   } catch(Err){
-//     console.log(Err);
-//   }
-// }
+  }
+  catch (err) {
+    console.log(err);
+  }
+  finally {
+    setIsLoading(false);
+  }
+}
+const filteredData = computed(() => {
 
 
-//Get the items data from the database to use them in the table
+  if (fltr_text.value === '') {
 
-// async function getData() {
-//   const api = 'route'
-//   try {
-//     const response = await fetch(api);
-//     const data = await response.json();
-//     rows.value = data;
-//   } catch (err) {
-//     console.log("this is the error:" + err);
-//   }}
+    return cloneDeep(rows.value)
+  }
+  else {
+
+    return customTableSearch(fltr_text.value, rows.value)
+  }
 
 
-//use getData function onMounted
 
-//   onMounted(() => {
-//   getData(); // Call the getData function when the component is mounted
-
-// }
-// });
-
-
-//reload the data from the database everytime we get back to this page
-
-// onBeforeRouteUpdate(()=>{
-//   getData();
-// })
+})
 
 </script>
 

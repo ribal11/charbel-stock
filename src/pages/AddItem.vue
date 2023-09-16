@@ -1,5 +1,7 @@
 <template>
   <q-card class="q-ma-sm">
+    <q-btn flat icon="close" style="float:right;z-index: 9999;" @click="router.go(-1)" />
+
     <LoadingComponent v-if="isLoading" />
     <q-card-section>
       <div class="text-h6">Add Stock Item</div>

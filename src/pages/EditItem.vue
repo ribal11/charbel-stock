@@ -1,11 +1,13 @@
 <template>
   <q-card class="q-ma-sm">
+    <q-btn flat icon="close" style="float:right;z-index: 9999;" @click="router.go(-1)" />
+    <loading-component v-if="isLoading" />
     <q-card-section>
       <div class="text-h6">Update Stock Item</div>
     </q-card-section>
     <q-card-section>
       <label for="sn">Serial No</label>
-      <q-input square outlined v-model="item.id" id="sn" />
+      <q-input square outlined v-model="item.serno" id="sn" />
       <label for="cat">Category</label>
       <q-input square outlined v-model="item.category" id="cat" />
 
@@ -32,6 +34,7 @@ import { useQuasar } from "quasar";
 import { storeToRefs } from "pinia";
 import { useStore } from "src/stores/store";
 import ENV from "src/helpers/globals";
+import LoadingComponent from "src/components/LoadingComponent.vue";
 
 const $q = useQuasar()
 const router = useRouter();
@@ -45,6 +48,7 @@ const { setIsLoading } = store;
 
 const item = ref({
   id: "",
+  serno: "",
   category: "",
   name: "",
   qty: 0,
@@ -74,7 +78,17 @@ const fetchData = async () => {
     }
     else {
       resp = await resp.json();
-      console.log(resp)
+      if (resp.length > 0) {
+        console.log('here')
+        item.value.id = resp[0].id;
+        item.value.serno = resp[0].serno;
+        item.value.category = resp[0].cat;
+        item.value.name = resp[0].name;
+        item.value.qty = resp[0].qty;
+        item.value.supplier = resp[0].supp;
+
+      }
+
       // rows.value = resp;
     }
 
@@ -141,6 +155,7 @@ const updateItem = async () => {
 
 
     const body = {
+      "id": item.value.id,
       "serialno": item.value.serno,
       "category": item.value.category,
       "description": item.value.name,
@@ -149,7 +164,7 @@ const updateItem = async () => {
 
     }
     setIsLoading(true)
-    let uri = `${ENV.HomeURL}/items/addItem`;
+    let uri = `${ENV.HomeURL}/items/updateItem`;
 
     let resp = await fetch(uri, {
       method: 'POST',
@@ -175,7 +190,7 @@ const updateItem = async () => {
         color: "positive",
         type: 'positive',
         textColor: "white",
-        message: "Item Added Successfully",
+        message: "Item Updated Successfully",
         timeout: 2000
       });
       setTimeout(() => {
