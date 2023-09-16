@@ -21,7 +21,6 @@
       <q-list padding>
         <q-item
           clickable
-          @click="stockView()"
           v-ripple
           to="/"
           exact
@@ -32,7 +31,6 @@
 
         <q-item
           clickable
-          @click="createBill()"
           v-ripple
           to="/home/check"
           exact
@@ -43,7 +41,6 @@
 
         <q-item
           clickable
-          @click="buy()"
           v-ripple
           to="/home/buy"
           exact

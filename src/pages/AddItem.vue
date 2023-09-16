@@ -1,28 +1,30 @@
 <template>
-  <q-page class="container">
-    <base-card>
-      <form @submit.prevent="addForm">
-        <div class="form-control">
-          <label for="id">Serial No</label>
-          <q-input square outlined v-model="item.id" class="input" id="id"  />
-        </div>
-        <div class="form-control">
-          <label for="category">Category</label>
-          <q-input square outlined v-model="item.category" class="input" id="category" />
-        </div>
-        <div class="form-control">
-          <label for="name">Name</label>
-          <q-input square outlined v-model="item.name" class="input" id="name" />
-        </div>
 
-        <div class="form-control">
+    <q-card>
+      <form>
+      <q-card-section>
+        
+          <label for="id">Serial No</label>
+          <q-input square outlined v-model="item.id"  id="id"  />
+        </q-card-section>
+        <q-card-section>
+          <label for="category">Category</label>
+          <q-input square outlined v-model="item.category"  id="category" />
+        </q-card-section>
+        <q-card-section>
+          <label for="name">Name</label>
+          <q-input square outlined v-model="item.name"  id="name" />
+        </q-card-section>
+
+        <q-card-section>
           <label for="qty">Quantity</label>
-          <q-input square outlined v-model="item.qty" class="input" id="qty" type="number" min="0" />
-        </div>
-        <div class="form-control">
+          <q-input square outlined v-model="item.qty"  id="qty" type="number" min="0" />
+        </q-card-section>
+        <q-card-section>
           <label for="supp">Supplier</label>
-          <q-input square outlined v-model="item.supplier" class="input" id="supp" />
-        </div>
+          <q-input square outlined v-model="item.supplier"  id="supp" />
+        </q-card-section>
+        <q-card-actions>
         <q-btn
           align="center"
           class="btn-fixed-width label"
@@ -30,10 +32,11 @@
           style="width: 100%"
           label="Update"
           type="submit"
-        />
+        /></q-card-actions>
       </form>
-    </base-card>
-  </q-page>
+    
+    </q-card>
+
 </template>
 <script setup>
 import BaseCard from "src/components/UI/BaseCard.vue";

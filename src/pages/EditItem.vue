@@ -1,28 +1,29 @@
 <template>
-  <q-page class="container">
-    <base-card>
-      <form @submit.prevent="updateForm">
-        <div class="form-control">
-          <label for="sn">Serial No</label>
-          <q-input square outlined v-model="item.id" class="input" id="sn" />
-        </div>
-        <div class="form-control">
-          <label for="cat">Category</label>
-          <q-input square outlined v-model="item.category" class="input" id="cat" />
-        </div>
-        <div class="form-control">
-          <label for="name">Name</label>
-          <q-input square outlined v-model="item.name" class="input" id="name" />
-        </div>
 
-        <div class="form-control">
+    <q-card>
+      <form @submit.prevent="updateForm">
+        <q-card-section>
+          <label for="sn">Serial No</label>
+          <q-input square outlined v-model="item.id"  id="sn" />
+        </q-card-section>
+        <q-card-section>
+          <label for="cat">Category</label>
+          <q-input square outlined v-model="item.category"  id="cat" />
+        </q-card-section>
+        <q-card-section>
+          <label for="name">Name</label>
+          <q-input square outlined v-model="item.name"  id="name" />
+        </q-card-section>
+
+        <q-card-section>
           <label for="qty">Quantity</label>
-          <q-input square outlined v-model="item.qty" class="input" id="qty" type="number" min="0" />
-        </div>
-        <div class="form-control">
+          <q-input square outlined v-model="item.qty"  id="qty" type="number" min="0" />
+        </q-card-section>
+        <q-card-section>
           <label for="supp">Supplier</label>
-          <q-input square outlined v-model="item.supplier" class="input" id="supp" />
-        </div>
+          <q-input square outlined v-model="item.supplier"  id="supp" />
+        </q-card-section>
+        <q-card-actions>
         <q-btn
           align="center"
           class="btn-fixed-width label"
@@ -31,9 +32,11 @@
           label="Update"
           type="submit"
         />
+      </q-card-actions>
       </form>
-    </base-card>
-  </q-page>
+    </q-card>
+
+
 </template>
 
 <script setup>
@@ -120,9 +123,7 @@ watch(() => item.qty,(newQty, oldQty) => {
 </script>
 
 <style scoped>
-.form-control {
-  margin: 0.5rem 0;
-}
+
 
 label {
   font-weight: bold;
@@ -143,10 +144,5 @@ h3 {
   margin: 0.5rem 0;
   font-size: 1rem;
 }
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
+
 </style>

@@ -1,6 +1,8 @@
 <template>
+<q-btn color="white" text-color="black" label="Add" class="q-my-md" type="submit"  @click="addItem"/>
+<template v-if="!$q.platform.is.mobile">
   <div class="q-pa-md">
-    <q-btn color="white" text-color="black" label="Add" class="q-mb-md" type="submit"  @click="addItem"/>
+    
     <q-table
     class="table"
       style="height: auto"
@@ -44,12 +46,33 @@
   </div>
 </template>
 
+<template v-else>
+<div>
+        <q-card v-for="(item) in rows" :key="item.ItemSerialNumber">
+          <q-card-section v-for="(col,colIndex) in getCols" :key="colIndex" horizontal class="row" >
+            <q-card-section class="col title">
+              {{ col.label }} :
+            </q-card-section>
+            <q-card-section class="col">
+              {{item[col.field]}}
+            </q-card-section>
+          </q-card-section>
+          <q-card-actions class="row">
+            <q-btn flat class="col bg-green" @click="handleUpdate(item)">Update</q-btn>
+            <q-btn flat class="col bg-red" @click="handleDelete(item)">Delete</q-btn>
+          </q-card-actions>
+          <!-- Add other card content here -->
+        </q-card>
+      </div>
+</template>
+</template>
 <script setup>
 
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import {  onBeforeRouteUpdate, useRouter } from 'vue-router';
+import { useQuasar } from "quasar";
 
-
+const $q = useQuasar();
 const router = useRouter();
 const pagination = ref({
   rowsPerPage: 1000,
@@ -105,7 +128,16 @@ const rows = ref([
 ]);
 
 function handleDelete(row){
-  rows.value=rows.value.filter((item)=> item.ItemSerialNumber !== row.ItemSerialNumber)
+  $q.dialog({
+    title:"Confirm",
+    message:'Are you sure you want to delete this row?',
+    cancel:true,
+  }).onOk(() => {
+    rows.value=rows.value.filter((item)=> item.ItemSerialNumber !== row.ItemSerialNumber)
+  }).onCancel(() => {
+    console.log('cancel');
+  })
+ 
 }
 
 function handleUpdate(row){
@@ -114,6 +146,11 @@ function handleUpdate(row){
 function addItem(){
   router.push('/home/add');
 }
+
+const getCols = computed(()=>{
+  const filteredColumns = columns.filter((col) => col.name !== 'update' && col.name !== 'delete');
+  return filteredColumns
+})
 
 
 
@@ -173,3 +210,13 @@ function addItem(){
 
 </script>
 
+<style scoped>
+.horizontal-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.title{
+  font-weight: 500;
+}
+</style>
