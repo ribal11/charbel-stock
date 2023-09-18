@@ -24,8 +24,8 @@ const routes = [
       { path: '', name: 'home', component: () => import('pages/IndexPage.vue') },
       { path: 'edit/:id', props: true, component: () => import('pages/EditItem.vue') },
       { path: '/home/add', component: () => import('pages/AddItem.vue') },
-      { path: '/home/check', name: 'bill', component: () => import('pages/CheckClient.vue') },
-      { path: '/home/buy', name: 'buy', component: () => import('pages/CreateBill.vue') },
+      { path: '/home/check', name: 'bill', component: () => import('pages/SalesInvoice.vue') },
+      { path: '/home/buy', name: 'buy', component: () => import('pages/PurchaseInvoice.vue') },
 
     ]
   },

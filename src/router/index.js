@@ -1,6 +1,7 @@
 import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
+import { LocalStorage } from 'quasar'
 
 /*
  * If not building with SSR mode, you can
@@ -28,7 +29,7 @@ export default route(function (/* { store, ssrContext } */) {
 
 
   Router.beforeEach((to, from, next) => {
-    const hasToken = !!localStorage.getItem('userData');
+    const hasToken = !!LocalStorage.getItem('userData');
 
     if (to.name === 'login' && hasToken) {
       next({ name: 'home' });
