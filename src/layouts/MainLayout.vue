@@ -23,6 +23,13 @@
         <q-item clickable v-ripple to="/home/buy" exact :class="{ 'grey': $route.name === 'buy' }">
           <q-item-section> Purchase Invoice </q-item-section>
         </q-item>
+        <q-item clickable v-ripple to="/home/salesInvoices" exact :class="{ 'grey': $route.name === 'salesInvoices' }">
+          <q-item-section> View Sales Invoices </q-item-section>
+        </q-item>
+
+        <q-item clickable v-ripple to="/home/purchaseInvoice" exact :class="{ 'grey': $route.name === 'purchaseInvoice' }">
+          <q-item-section> View Sales Invoices </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 

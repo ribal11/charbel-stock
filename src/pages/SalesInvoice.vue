@@ -83,7 +83,6 @@
         <q-btn color="negative" flat push label="Cancel" @click="onDialogCancel" />
       </q-card-actions>
       <q-card-section>
-<<<<<<< HEAD:src/pages/CheckClient.vue
         <label for="id" :class="!$q.platform.is.mobile?'label':''">Serial Number</label>
         <q-input
           v-model="getUpdate.ItemSerialNumber"
@@ -140,33 +139,6 @@
         <q-btn color="primary" label="OK" @click="onOKClickUpdate" />
         <!-- <q-btn color="primary" label="Cancel" @click="onDialogCancelUpate" /> -->
       </q-card-actions>
-=======
-        <label for="id">Serial Number</label>
-        <q-input v-model="getUpdate.ItemSerialNumber" debounce="500" filled class="q-mb-sm" disable="" />
-      </q-card-section>
-
-      <q-card-section>
-        <label for="category">Category</label>
-        <q-input v-model="getUpdate.ItemCategory" debounce="500" filled class="q-mb-sm" disable />
-      </q-card-section>
-
-      <q-card-section>
-        <label for="name">Name</label>
-        <q-input v-model="getUpdate.ItemName" debounce="500" filled disable class="q-mb-sm" />
-      </q-card-section>
-
-      <q-card-section>
-        <label for="qty">Quantity</label>
-        <q-input v-model="getUpdate.ItemQty" debounce="500" filled class="q-mb-sm" type="number" min="0" />
-
-      </q-card-section>
-
-      <q-card-section>
-        <label for="supplier">Supplier</label>
-        <q-input v-model="getUpdate.ItemSupplier" debounce="500" filled class="q-mb-sm" disable />
-      </q-card-section>
-
->>>>>>> f1d400432c21cc7060f267e003f4001c0ce91310:src/pages/SalesInvoice.vue
     </q-card>
   </q-dialog>
 
