@@ -3,18 +3,18 @@
     <template v-if="!$q.platform.is.mobile">
       <div class="input q-mt-md">
         <label class="q-mr-sm" for="name">Supplier Name: </label>
-        <q-input outlined v-model="name" placeholder="supplier name" />
+        <q-input outlined v-model="name" placeholder="Supplier Name" />
       </div>
     </template>
 
     <template v-else>
-      <div class="relative-position d-flex justify-center align-center">
-        <q-input outlined v-model="name" placeholder="supplier name" class="q-ma-md q-pa-md" />
+      <div>
+        <q-input outlined v-model="name" placeholder="Supplier Name" class="q-ma-md q-pa-md" />
       </div>
     </template>
 
     <div class="add">
-      <q-btn color="primary" label="Add" class="q-mr-md" @click="addItem" />
+      <q-btn color="primary" label="Add Item" class="q-mr-md" @click="addItem" />
     </div>
     <template v-if="!$q.platform.is.mobile">
       <div class="container">
@@ -67,13 +67,12 @@
 
           <!-- Add other card content here -->
         </q-card>
-        <div style="text-align: center; margin-top: 16px">
-          <q-btn flat color="primary" @click="handleAdd" v-if="!isEmpty"> Save </q-btn>
+        <div class="row justify-center q-my-sm">
+          <q-btn class="col-6" push color="primary" @click="handleAdd" v-if="!isEmpty">
+            Save
+          </q-btn>
         </div>
-        <div class="center">
-          <p v-if="isEmpty" class="empty-message">No rows yet</p>
-          <!-- Your other template content -->
-        </div>
+
 
       </div>
     </template>
@@ -82,6 +81,12 @@
 
   <q-dialog ref="dialogRefUpdate">
     <q-card class="q-dialog-plugin">
+      <q-card-actions align="right">
+        <q-btn color="primary" flat push label="OK" @click="onOKClickUpdate" />
+        <q-btn color="negative" flat push label="Cancel" @click="onDialogCancel" />
+      </q-card-actions>
+
+
       <q-card-section>
         <label for="id">Serial Number</label>
         <q-input v-model="getUpdate.ItemSerialNumber" debounce="500" filled class="q-mb-sm" disable="" />
@@ -99,25 +104,32 @@
 
       <q-card-section>
         <label for="qty">Quantity</label>
-        <q-input v-model="getUpdate.ItemQty" debounce="500" filled class="q-mb-sm" />
+        <q-input v-model="getUpdate.ItemQty" debounce="500" filled class="q-mb-sm" type="number" min="0" />
 
       </q-card-section>
-      <q-card-actions align="right">
-        <q-btn color="primary" label="OK" @click="onOKClickUpdate" />
-        <!-- <q-btn color="primary" label="Cancel" @click="onDialogCancelUpate" /> -->
-      </q-card-actions>
+
     </q-card>
   </q-dialog>
 
   <q-dialog ref="dialogRef" @hide="onDialogHide">
-    <q-card class="q-dialog-plugin card">
-      <div class="search">
-        <q-input v-model="search" debounce="500" filled placeholder="Search" class="q-mb-sm">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
+    <q-card class="q-dialog-plugin card q-pa-sm">
+
+      <div style="height: 120px;">
+        <q-card-actions align="right">
+          <q-btn color="primary" flat push label="OK" @click="onDialogOK" />
+          <q-btn color="negative" flat push label="Cancel" @click="onDialogCancel" />
+        </q-card-actions>
+
+        <div class="search">
+          <q-input v-model="search" debounce="500" filled placeholder="Search" class="q-mb-sm">
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </div>
       </div>
+
+
       <template v-if="!$q.platform.is.mobile">
         <q-table class="table" style="height: auto" flat bordered :rows="searchItem" :columns="columnsSupplierStock"
           row-key="ItemSerialNumber" selection="multiple" v-model:selected="selected" virtual-scroll
@@ -134,41 +146,42 @@
         </q-table>
       </template>
 
-
       <template v-else>
-        <q-card v-for="item in searchItem" :key="item.ItemSerialNumber" style="border-bottom: 1px solid lightgrey;">
-          <q-card-section>
-            <q-checkbox v-model="selected" :val="item" label="check item" color="green" />
-          </q-card-section>
-          <q-card-section v-for="(col, colIndex) in getColsSupp" :key="colIndex" horizontal class="row">
-            <q-card-section class="col title">
-              {{ col.label }} :
-            </q-card-section>
-            <q-card-section class="col  ">
-              <div class="q-mt-md">{{ item[col.field] }}</div>
+        <div style="overflow-y:scroll; height: calc(100% - 120px); ">
+          <q-card v-for="item in searchItem" :key="item.ItemSerialNumber" style="border-bottom: 1px solid lightgrey;">
+            <q-card-section>
 
-            </q-card-section>
-          </q-card-section>
-          <q-card-section horizontal class="row">
-            <q-card-section class="title col">
-              quantity:
-            </q-card-section>
-            <q-card-section class="col">
-              <q-input v-model="item.quantity" outlined type="number" min="0" :max="item.quantity"
-                :disable="!selected.includes(item)" :placeholder='!selected.includes(item) ? "disabled" : ""' />
-            </q-card-section>
-          </q-card-section>
+              <div class="text-right" style="float: right;">
+                <q-checkbox v-model="selected" :val="item" label="" color=" green" />
+              </div>
+              <div v-for="(col, colIndex) in getColsSupp" :key="colIndex" horizontal class="row">
+                <div class="title col-12">
+                  {{ col.label }} :
+                </div>
 
-          <!-- Add other card content here -->
-        </q-card>
+                <div>{{ item[col.field] }}</div>
+              </div>
+              <div horizontal class="row">
+                <div class="title col-6">
+                  quantity:
+                </div>
+                <div class="col-6">
+                  <q-input v-model="item.quantity" outlined type="number" min="0" :max="item.quantity"
+                    :disable="!selected.includes(item)" :placeholder='!selected.includes(item) ? "" : "Enter  Qty"' />
+                </div>
+              </div>
+            </q-card-section>
+
+            <!-- Add other card content here -->
+          </q-card>
+        </div>
+
+
 
       </template>
       <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
 
-      <q-card-actions class="buttonspace">
-        <q-btn color="primary" label="OK" @click="onDialogOK" />
-        <q-btn color="primary" label="Cancel" @click="onDialogCancel" />
-      </q-card-actions>
+
     </q-card>
   </q-dialog>
 </template>
@@ -191,16 +204,16 @@ const columnsSupplierStock = [
   {
     name: "ItemSerialNumber",
     align: "center",
-    label: "Item Serial Number",
+    label: "Serial Number",
     field: "ItemSerialNumber",
   },
   {
     name: "ItemName",
-    label: "Item Name",
+    label: "Name",
     field: "ItemName",
     align: "center",
   },
-  { name: "StockQty", label: "Item Qty", field: "ItemQty", align: "center" },
+  { name: "StockQty", label: "Quantity", field: "ItemQty", align: "center" },
   { name: "quantity", label: "client Qty", field: "quantity", align: "center" },
 ];
 //column of the table client items
@@ -208,22 +221,22 @@ const columnsItemsBill = [
   {
     name: "ItemSerialNumber",
     align: "center",
-    label: "Item Serial Number",
+    label: "Serial Number",
     field: "ItemSerialNumber",
   },
   {
     name: "ItemCategory",
-    label: "Item Category",
+    label: "Category",
     field: "ItemCategory",
     align: "center",
   },
   {
     name: "ItemName",
-    label: "Item Name",
+    label: "Name",
     field: "ItemName",
     align: "center",
   },
-  { name: "ItemQty", label: "Item Qty", field: "ItemQty", align: "center" },
+  { name: "ItemQty", label: "Quantity", field: "ItemQty", align: "center" },
 
   { name: "delete", label: "delete", field: "delete", align: "center" },
   { name: "update", label: "update", field: "delete", align: "center" }
@@ -340,7 +353,7 @@ function handleAdd() {
 function handleDelete(row) {
   $q.dialog({
     title: "Confirm",
-    message: "are you sure?",
+    message: "Are you sure to delete this Item?",
     cancel: true
   }).onOk(() => {
     const item = rowsItemsBill.value.find(
@@ -470,6 +483,7 @@ function onDialogOK() {
 function onDialogCancel() {
   selected.value = [];
   dialogRef.value.hide();
+  dialogRefUpdate.value.hide();
 }
 
 //get the stock data from the db and put it in the rowsSupplierStock
@@ -578,6 +592,9 @@ label {
 
 .card {
   width: auto;
+  min-width: 65%;
+  min-height: 85%;
+  height: 85%;
 }
 
 .search {

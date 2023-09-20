@@ -2,14 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title> Menu </q-toolbar-title>
 
@@ -17,36 +10,18 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen"  bordered>
+    <q-drawer v-model="leftDrawerOpen" bordered>
       <q-list padding>
-        <q-item
-          clickable
-          v-ripple
-          to="/"
-          exact
-          :class="{ 'grey': $route.name === 'home' }"
-        >
+        <q-item clickable v-ripple to="/" exact :class="{ 'grey': $route.name === 'home' }">
           <q-item-section> Stock View </q-item-section>
         </q-item>
 
-        <q-item
-          clickable
-          v-ripple
-          to="/home/check"
-          exact
-          :class="{ 'grey': $route.name === 'bill' }"
-        >
-          <q-item-section> Create Bill </q-item-section>
+        <q-item clickable v-ripple to="/home/check" exact :class="{ 'grey': $route.name === 'bill' }">
+          <q-item-section> Sales Invoice </q-item-section>
         </q-item>
 
-        <q-item
-          clickable
-          v-ripple
-          to="/home/buy"
-          exact
-          :class="{ 'grey': $route.name === 'buy' }"
-        >
-          <q-item-section> Buy </q-item-section>
+        <q-item clickable v-ripple to="/home/buy" exact :class="{ 'grey': $route.name === 'buy' }">
+          <q-item-section> Purchase Invoice </q-item-section>
         </q-item>
       </q-list>
     </q-drawer>
@@ -58,8 +33,8 @@
 </template>
 
 <script setup>
-import { useQuasar } from "quasar";
-import {useRouter} from "vue-router"
+import { LocalStorage, useQuasar } from "quasar";
+import { useRouter } from "vue-router"
 import { ref } from "vue";
 
 const leftDrawerOpen = ref(false);
@@ -71,13 +46,13 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
-function logout(){
+function logout() {
   $q.dialog({
-    title:"Confirm",
-    message:"are you sure you want to logout?",
-    cancel:true
-  }).onOk(()=> {
-    localStorage.removeItem('token');
+    title: "Confirm",
+    message: "Are you sure you want to logout?",
+    cancel: true
+  }).onOk(() => {
+    LocalStorage.remove('userData');
     router.push('/login');
   })
 }
