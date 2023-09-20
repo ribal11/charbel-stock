@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <template v-if="!$q.platform.is.mobile">
-      <div class="input q-mt-md">
+      <div class="q-mt-md">
         <label class="q-mr-sm" for="name">Supplier Name: </label>
         <q-input outlined v-model="name" placeholder="Supplier Name" />
       </div>
@@ -571,11 +571,11 @@ label {
   justify-content: flex-end;
 }
 
-.input {
+/* .input {
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */
 
 .card {
   width: auto;

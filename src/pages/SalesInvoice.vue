@@ -590,11 +590,11 @@ label {
   justify-content: flex-end;
 }
 
-.input {
+/* .input {
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */
 
 .card {
   width: auto;
