@@ -391,7 +391,7 @@ function onOKClickUpdate() {
   }
 
   // Calculate the change in quantity
-  const qtyChange = baseQty.value - getUpdate.ItemQty;
+  const qtyChange =  getUpdate.ItemQty-baseQty.value ;
 
 
   if (qtyChange !== 0) {
