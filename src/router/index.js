@@ -28,17 +28,17 @@ export default route(function (/* { store, ssrContext } */) {
   })
 
 
-  // Router.beforeEach((to, from, next) => {
-  //   const hasToken = !!LocalStorage.getItem('userData');
+  Router.beforeEach((to, from, next) => {
+    const hasToken = !!LocalStorage.getItem('userData');
 
-  //   if (to.name === 'login' && hasToken) {
-  //     next({ name: 'home' });
-  //   } else if (to.name !== 'login' && !hasToken) {
-  //     next({ name: 'login' });
-  //   } else {
-  //     next();
-  //   }
-  // });
+    if (to.name === 'login' && hasToken) {
+      next({ name: 'home' });
+    } else if (to.name !== 'login' && !hasToken) {
+      next({ name: 'login' });
+    } else {
+      next();
+    }
+  });
 
   return Router
 })
