@@ -1,9 +1,9 @@
 {
   "name": "management-website",
   "version": "0.0.1",
-  "description": "website to manage marchendise",
-  "productName": "Quasar App",
-  "author": "Riba Azar <ribala94@gmail.com>",
+  "description": "Wheibe Commerce",
+  "productName": "Wheibe Commerce",
+  "author": "",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
@@ -14,18 +14,28 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "pinia": "^2.1.6",
     "quasar": "^2.6.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
   },
   "devDependencies": {
-    "eslint": "^8.10.0",
-    "eslint-plugin-vue": "^9.0.0",
-    "eslint-config-prettier": "^8.1.0",
-    "prettier": "^2.5.1",
     "@quasar/app-vite": "^1.3.0",
     "autoprefixer": "^10.4.2",
-    "postcss": "^8.4.14"
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-vue": "^9.0.0",
+    "postcss": "^8.4.14",
+    "prettier": "^2.5.1",
+    "workbox-build": "^7.0.0",
+    "workbox-cacheable-response": "^7.0.0",
+    "workbox-core": "^7.0.0",
+    "workbox-expiration": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-strategies": "^7.0.0"
   },
   "engines": {
     "node": "^18 || ^16 || ^14.19",

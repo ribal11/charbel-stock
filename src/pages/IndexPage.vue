@@ -1,212 +1,287 @@
 <template>
-<q-btn color="white" text-color="black" label="Add" class="q-my-md" type="submit"  @click="addItem"/>
-<template v-if="!$q.platform.is.mobile">
-  <div class="q-pa-md">
-    
-    <q-table
-    class="table"
-      style="height: auto"
-      flat
-      bordered
-      title="Stock"
-      :rows="rows"
-      :columns="columns"
-      row-key="index"
-      virtual-scroll
-      v-model:pagination="pagination"
-      :rows-per-page-options="[0]"
-    >
-      <!-- Custom "update" and "delete" columns -->
-      <template v-slot:body-cell-update="props">
-        <!-- Assuming props.row.update contains the update action -->
-        <q-td :props="props">
-          <q-btn
-            flat
-            round
-            color="primary"
-            icon="edit"
-            @click="handleUpdate(props.row)"
-          />
-        </q-td>
-      </template>
+  <LoadingComponent v-if="isLoading" />
+  <div class="row justify-end">
+    <div class="col-6 col-sm-3 text-right">
+      <q-btn color="primary" label="Add New Item" class="q-my-sm q-mr-sm" @click="addItem" />
+    </div>
 
-      <template v-slot:body-cell-delete="props">
-        <!-- Assuming props.row.delete contains the delete action -->
-        <q-td :props="props">
-          <q-btn
-            flat
-            round
-            color="primary"
-            icon="delete"
-            @click="handleDelete(props.row)"
-          />
-        </q-td>
-      </template>
-    </q-table>
   </div>
-</template>
 
-<template v-else>
-<div>
-        <q-card v-for="(item) in rows" :key="item.ItemSerialNumber">
-          <q-card-section v-for="(col,colIndex) in getCols" :key="colIndex" horizontal class="row" >
-            <q-card-section class="col title">
-              {{ col.label }} :
-            </q-card-section>
-            <q-card-section class="col">
-              {{item[col.field]}}
-            </q-card-section>
+
+
+
+  <q-table class="table" style="height: auto" flat bordered title="Stock" :rows="filteredData" :columns="columns"
+    row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols" :grid="$q.platform.is.mobile">
+
+    <template v-slot:top-right>
+      <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="fltr_text" placeholder="Search">
+        <template v-slot:append>
+          <q-icon name="search" />
+        </template>
+      </q-input>
+      <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter = !show_filter" flat />
+    </template>
+    <!-- Custom "update" and "delete" columns -->
+    <template v-if="!$q.platform.is.mobile" v-slot:body-cell-update="props">
+      <!-- Assuming props.row.update contains the update action -->
+      <q-td :props="props">
+        <q-btn flat round color="primary" icon="edit" @click="handleUpdate(props.row)" />
+      </q-td>
+    </template>
+
+    <template v-if="!$q.platform.is.mobile" v-slot:body-cell-delete="props">
+      <!-- Assuming props.row.delete contains the delete action -->
+      <q-td :props="props">
+        <q-btn flat round color="primary" icon="delete" @click="handleDelete(props.row)" />
+      </q-td>
+    </template>
+
+
+    <template v-if="$q.platform.is.mobile" v-slot:item="props">
+      <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+        <q-card flat bordered>
+          <q-card-section class="text-left">
+            <div class="row">
+              <span class="col-12  text-weight-bolder   ">
+                Serial Number
+              </span>
+              <span class="col-12">
+                {{ props.row.serno }}
+              </span>
+            </div>
+            <div class="row">
+              <span class="col-12  text-weight-bolder">
+                Category
+              </span>
+              <span class="col-12">
+                {{ props.row.cat }}
+              </span>
+            </div>
+            <div class="row">
+              <span class="col-12  text-weight-bolder">
+                Name
+              </span>
+              <span class="col-12">
+                {{ props.row.name }}
+              </span>
+            </div>
+
+
+            <div class="row">
+              <span class="col-12  text-weight-bolder">
+                Quantity
+              </span>
+              <span class="col-12">
+                {{ props.row.qty }}
+              </span>
+            </div>
+            <div class="row">
+              <span class="col-12  text-weight-bolder">
+                Supplier
+              </span>
+              <span class="col-12">
+                {{ props.row.supp }}
+              </span>
+            </div>
+
+
+            <div class="row q-mt-sm">
+              <span class="col-6 text-center">
+                <q-btn color="primary" label="Edit" icon="edit" size="sm" @click="handleUpdate(props.row)" />
+              </span>
+              <span class="col-6 text-center">
+                <q-btn color="negative" label="Delete" icon="delete_outline" size="sm" @click="handleDelete(props.row)" />
+              </span>
+            </div>
           </q-card-section>
-          <q-card-actions class="row">
-            <q-btn flat class="col bg-green" @click="handleUpdate(item)">Update</q-btn>
-            <q-btn flat class="col bg-red" @click="handleDelete(item)">Delete</q-btn>
-          </q-card-actions>
-          <!-- Add other card content here -->
         </q-card>
       </div>
-</template>
+    </template>
+
+  </q-table>
 </template>
 <script setup>
 
 import { computed, onMounted, ref } from "vue";
-import {  onBeforeRouteUpdate, useRouter } from 'vue-router';
+import { onBeforeRouteUpdate, useRouter } from 'vue-router';
 import { useQuasar } from "quasar";
+import ENV from "src/helpers/globals";
+
+import LoadingComponent from "src/components/LoadingComponent.vue";
+import { useStore } from "src/stores/store";
+import { storeToRefs } from "pinia";
+import { cloneDeep } from "lodash";
+import { customTableSearch } from "src/helpers/utils";
 
 const $q = useQuasar();
 const router = useRouter();
+
+const store = useStore();
+
+const { isLoading } = storeToRefs(store);
+const { setIsLoading } = store;
+
+const show_filter = ref(false);
+const fltr_text = ref('');
+
 const pagination = ref({
   rowsPerPage: 1000,
 });
+
+const visibleCols = ['serno', 'cat', 'name', 'qty', 'supp', 'update', 'delete']
 const columns = [
+  {
+    name: 'id',
+    field: 'id'
+  },
 
   {
-    name: "ItemSerialNumber",
+    name: "serno",
     align: "center",
     label: "Item Serial Number",
-    field: "ItemSerialNumber",
+    field: "serno",
   },
   {
-    name: "ItemCategory",
+    name: "cat",
     label: "Item Category",
-    field: "ItemCategory",
+    field: "cat",
     align: "center",
   },
   {
-    name: "ItemName",
+    name: "name",
     label: "Item Name",
-    field: "ItemName",
-    align: "center",
+    field: "name",
+    align: "left",
   },
-  { name: "ItemQty", label: "Item Qty", field: "ItemQty", align: "center" },
+  { name: "qty", label: "Item Qty", field: "qty", align: "center" },
   {
-    name: "ItemSupplier",
+    name: "supp",
     label: "Item Supplier",
-    field: "ItemSupplier",
+    field: "supp",
     align: "center",
   },
-  { name: "update", label: "update", field: "update", align: "center",},
-  { name: "delete", label: "delete", field: "delete", align: "center" },
+  { name: "update", label: "update", field: null, align: "center", },
+  { name: "delete", label: "delete", field: null, align: "center" },
 ];
 
-const rows = ref([
-  {
-    ItemSerialNumber: "1",
-    ItemCategory: "Frozen Yogurt",
-    ItemName: "Frozen Yogurt",
-    ItemQty: 159,
-    ItemSupplier: "Supplier A",
+const rows = ref([]);
 
-  },
-  {
-    ItemSerialNumber: "2",
-    ItemCategory: "Ice cream sandwich",
-    ItemName: "Ice cream sandwich",
-    ItemQty: 237,
-    ItemSupplier: "Supplier B",
-
-  },
-]);
-
-function handleDelete(row){
+function handleDelete(row) {
   $q.dialog({
-    title:"Confirm",
-    message:'Are you sure you want to delete this row?',
-    cancel:true,
+    title: "Confirm",
+    message: 'Are you sure you want to delete this stock Item?',
+    cancel: true,
   }).onOk(() => {
-    rows.value=rows.value.filter((item)=> item.ItemSerialNumber !== row.ItemSerialNumber)
+    // rows.value = rows.value.filter((item) => item.ItemSerialNumber !== row.ItemSerialNumber)
+    deleteItem(row.id);
   }).onCancel(() => {
     console.log('cancel');
   })
- 
+
 }
 
-function handleUpdate(row){
-  router.push(`/home/delete/${row.ItemSerialNumber}`)
+function handleUpdate(row) {
+  router.push(`/home/edit/${row.id}`)
 }
-function addItem(){
+function addItem() {
   router.push('/home/add');
 }
 
-const getCols = computed(()=>{
-  const filteredColumns = columns.filter((col) => col.name !== 'update' && col.name !== 'delete');
+const getCols = computed(() => {
+  const filteredColumns = columns.filter((col) =>
+    col.name !== 'update'
+    && col.name !== 'delete' && col.name !== 'id'
+  );
   return filteredColumns
 })
 
 
+onMounted(() => {
+  fetchData();
+})
+
+const fetchData = async () => {
+  try {
+    setIsLoading(true);
+
+    let resp = await fetch(`${ENV.HomeURL}/items/getItems`, { method: 'get', headers: { 'Accept': 'application/json' } });
+
+    if (!resp.ok) {
+      resp = await resp.text();
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: resp,
+      });
+    }
+    else {
+      resp = await resp.json();
+      rows.value = resp;
+    }
+
+
+  }
+  catch (err) {
+    console.log(err);
+  }
+  finally {
+    setIsLoading(false);
+  }
+}
+
+const deleteItem = async (itemid) => {
+  try {
+    setIsLoading(true);
+
+    let resp = await fetch(`${ENV.HomeURL}/items/deleteItem?id=${itemid}`, { method: 'get', headers: { 'Accept': 'application/json' } });
+
+    if (!resp.ok) {
+      resp = await resp.text();
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: resp,
+      });
+    }
+    else {
+      // resp = await resp.json();
+      $q.notify({
+        color: "positive",
+        type: 'positive',
+        textColor: "white",
+        message: "Item Deleted Successfully",
+        timeout: 2000
+      });
+      fetchData()
+
+    }
+
+
+  }
+  catch (err) {
+    console.log(err);
+  }
+  finally {
+    setIsLoading(false);
+  }
+}
+const filteredData = computed(() => {
+
+
+  if (fltr_text.value === '') {
+
+    return cloneDeep(rows.value)
+  }
+  else {
+
+    return customTableSearch(fltr_text.value, rows.value)
+  }
 
 
 
-
-
-
-//Delete the row in the db and in the row constante
-
-// async function handleDelete(row){
-
-//   try{
-//     rows.value = rows.value.filter((item) => item.ItemSerialNumber !== row.ItemSerialNumber)
-//     const response =  await fetch(`https://localhost:300/api/delete/${row.ItemSerialNumber}`,{
-//       method:'delete'
-//     });
-//     if(response.ok){
-//       const error = new Error(
-//               "Error deleting task: Server response not okay"
-//             );
-//             throw error;
-//     }
-//   } catch(Err){
-//     console.log(Err);
-//   }
-// }
-
-
-//Get the items data from the database to use them in the table
-
-// async function getData() {
-//   const api = 'route'
-//   try {
-//     const response = await fetch(api);
-//     const data = await response.json();
-//     rows.value = data;
-//   } catch (err) {
-//     console.log("this is the error:" + err);
-//   }}
-
-
-//use getData function onMounted
-
-//   onMounted(() => {
-//   getData(); // Call the getData function when the component is mounted
-
-// }
-// });
-
-
-//reload the data from the database everytime we get back to this page 
-
-// onBeforeRouteUpdate(()=>{
-//   getData();
-// })
+})
 
 </script>
 
@@ -216,7 +291,8 @@ const getCols = computed(()=>{
   flex-direction: row;
   align-items: center;
 }
-.title{
+
+.title {
   font-weight: 500;
 }
 </style>

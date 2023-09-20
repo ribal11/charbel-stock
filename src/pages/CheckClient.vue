@@ -4,7 +4,7 @@
   <div class="main">
     <template v-if="!$q.platform.is.mobile">
       <div class="input q-mt-md">
-      <label for="name">Client Name: </label>
+      <label class="q-mr-sm" for="name">Client Name: </label>
       <q-input outlined v-model="name" placeholder="client name" />
     </div>
     </template>
@@ -445,13 +445,13 @@ function handleDelete(row) {
     (rowUser) => rowUser.ItemSerialNumber !== row.ItemSerialNumber
   )
   }).onCancel(() => console.log('cancel'))
-  
+
 }
 
   function handleUpdate(row){
      baseQty.value = row.ItemQty
      getUpdate = rowsClient.value.find((rowItem) => row.ItemSerialNumber === rowItem.ItemSerialNumber);
-  
+
   dialogRefUpdate.value.show()
 }
 
@@ -469,7 +469,7 @@ function onOKClickUpdate() {
 
   // Calculate the change in quantity
   const qtyChange = baseQty.value - getUpdate.ItemQty;
-  
+
 
   if (qtyChange !== 0) {
     const stockItemToUpdate = rowsStock.value.find(
@@ -486,7 +486,7 @@ function onOKClickUpdate() {
     stockItemToUpdate.ItemQty += qtyChange;
 
     console.log('it is ' + stockItemToUpdate.ItemQty);
-    if (stockItemToUpdate.ItemQty < 0) { 
+    if (stockItemToUpdate.ItemQty < 0) {
       check = false;// Check stockItemToUpdate.ItemQty directly
       $q.dialog({
         title: "error",
@@ -494,7 +494,7 @@ function onOKClickUpdate() {
       }).onOk(() => {
         rowsClient.value[indexToUpdate].ItemQty = 0;
         getUpdate.ItemQty = 0;
-        
+
       });
     }
   } else {
@@ -507,7 +507,7 @@ function onOKClickUpdate() {
       }).onOk(() => {
         rowsClient.value[indexToUpdate].ItemQty = 0;
         getUpdate.ItemQty = 0;
-        
+
       });
     }
   }
@@ -552,7 +552,7 @@ function onDialogOK() {
         console.log(rowsStock.value);
         rowsClient.value.push(merchandise);
         row.quantity = "";
-        
+
       }
     }
   });
