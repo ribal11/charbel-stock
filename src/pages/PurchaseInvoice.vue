@@ -28,6 +28,19 @@
               <q-btn flat round color="primary" icon="delete" @click="handleDelete(props.row)" />
             </q-td>
           </template>
+
+          <template v-slot:body-cell-update="props">
+            <!-- Assuming props.row.delete contains the delete action -->
+            <q-td :props="props">
+              <q-btn
+                flat
+                round
+                color="primary"
+                icon="edit"
+                @click="handleUpdate(props.row)"
+              />
+            </q-td>
+          </template>
         </q-table>
         <div style="text-align: center; margin-top: 16px">
           <q-btn flat color="primary" @click="handleAdd"> Save </q-btn>
@@ -378,7 +391,7 @@ function onOKClickUpdate() {
   }
 
   // Calculate the change in quantity
-  const qtyChange = baseQty.value - getUpdate.ItemQty;
+  const qtyChange =  getUpdate.ItemQty-baseQty.value ;
 
 
   if (qtyChange !== 0) {

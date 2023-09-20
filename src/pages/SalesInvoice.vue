@@ -29,6 +29,18 @@
               <q-btn flat round color="primary" icon="delete" @click="handleDelete(props.row)" />
             </q-td>
           </template>
+          <template v-slot:body-cell-update="props">
+            <!-- Assuming props.row.delete contains the delete action -->
+            <q-td :props="props">
+              <q-btn
+                flat
+                round
+                color="primary"
+                icon="edit"
+                @click="handleUpdate(props.row)"
+              />
+            </q-td>
+          </template>
         </q-table>
         <div style="text-align: center; margin-top: 16px">
           <q-btn flat color="primary" @click="handleAdd"> Save </q-btn>
@@ -71,31 +83,62 @@
         <q-btn color="negative" flat push label="Cancel" @click="onDialogCancel" />
       </q-card-actions>
       <q-card-section>
-        <label for="id">Serial Number</label>
-        <q-input v-model="getUpdate.ItemSerialNumber" debounce="500" filled class="q-mb-sm" disable="" />
+        <label for="id" :class="!$q.platform.is.mobile?'label':''">Serial Number</label>
+        <q-input
+          v-model="getUpdate.ItemSerialNumber"
+          debounce="500"
+          filled
+          class="q-mb-sm"
+          disable=""
+        />
       </q-card-section>
 
       <q-card-section>
-        <label for="category">Category</label>
-        <q-input v-model="getUpdate.ItemCategory" debounce="500" filled class="q-mb-sm" disable />
+        <label for="category" :class="!$q.platform.is.mobile?'label':''" >Category</label>
+        <q-input
+          v-model="getUpdate.ItemCategory "
+          debounce="500"
+          filled
+          class="q-mb-sm"
+          disable
+        />
       </q-card-section>
 
       <q-card-section>
-        <label for="name">Name</label>
-        <q-input v-model="getUpdate.ItemName" debounce="500" filled disable class="q-mb-sm" />
+        <label for="name" :class="!$q.platform.is.mobile?'label':''">Name</label>
+        <q-input
+          v-model="getUpdate.ItemName"
+          debounce="500"
+          filled
+          disable
+          class="q-mb-sm"
+        />
       </q-card-section>
 
       <q-card-section>
-        <label for="qty">Quantity</label>
-        <q-input v-model="getUpdate.ItemQty" debounce="500" filled class="q-mb-sm" type="number" min="0" />
-
+        <label for="qty" :class="!$q.platform.is.mobile?'label':''">Quantity</label>
+        <q-input
+          v-model="getUpdate.ItemQty"
+          debounce="500"
+          filled
+          class="q-mb-sm"
+        />
+</q-card-section>
+        <q-card-section>
+        <label for="supplier" :class="!$q.platform.is.mobile?'label':''">Supplier</label>
+        <q-input
+          v-model="getUpdate.ItemSupplier"
+          debounce="500"
+          filled
+          class="q-mb-sm"
+          disable
+        />
+      
       </q-card-section>
-
-      <q-card-section>
-        <label for="supplier">Supplier</label>
-        <q-input v-model="getUpdate.ItemSupplier" debounce="500" filled class="q-mb-sm" disable />
-      </q-card-section>
-
+      <q-card-actions align="right">
+        <q-btn color="primary" label="OK" @click="onOKClickUpdate" />
+        <!-- <q-btn color="primary" label="Cancel" @click="onDialogCancelUpate" /> -->
+      </q-card-actions>
     </q-card>
   </q-dialog>
 
@@ -641,5 +684,8 @@ label {
 p {
   margin: 0;
   padding: 0;
+}
+.label{
+  display: block;
 }
 </style>

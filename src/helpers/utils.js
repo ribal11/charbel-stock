@@ -25,7 +25,7 @@ export const customTableSearch = (filterText, data, FilterOptions = null) => {
           let value = row[key]
 
           if (value && (regExDateFormat.test(value) || regExDateFormat2.test(value) || typeof value.getMonth === "function")) {
-            getRow = getRow || moment(value).format("DD/MM/YYYY").includes(searchedValue.trim()) || Moment(value).format("DD-MM-YYYY").includes(searchedValue.trim()) || value.toString().toLowerCase().includes(searchedValue.trim());
+            getRow = getRow || moment(value).format("DD/MM/YYYY").includes(searchedValue.trim()) || moment(value).format("DD-MM-YYYY").includes(searchedValue.trim()) || value.toString().toLowerCase().includes(searchedValue.trim());
           } else if (value) {
             getRow = getRow || value.toString().toLowerCase().includes(searchedValue.trim());
           }
