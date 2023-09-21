@@ -28,7 +28,7 @@
         </q-item>
 
         <q-item clickable v-ripple to="/home/purchaseInvoice" exact :class="{ 'grey': $route.name === 'purchaseInvoice' }">
-          <q-item-section> View Sales Invoices </q-item-section>
+          <q-item-section> View Purchase Invoices </q-item-section>
         </q-item>
       </q-list>
     </q-drawer>

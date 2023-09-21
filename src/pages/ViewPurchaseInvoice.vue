@@ -1,266 +1,217 @@
 <template>
-    <LoadingComponent v-if="isLoading" />
-  <div class="row date q-mt-sm">
-    <div class="col-5">
-      
-      <q-input filled ref="visitDateRef" v-model="visitBeginningDate" mask="####-##-##" label="Visit Beginning  Date *"
-                :rules="[dateValidation]">
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                      <q-date v-model="visitBeginningDate" mask="YYYY-MM-DD">
-                        <div class="row items-center justify-end">
-                          <q-btn v-close-popup label="Close" color="primary" flat />
-                        </div>
-                      </q-date>
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-    </div>
-    <div class="col-5 q-col-end">
-      <q-input filled ref="visitDateRef" v-model="visitEndDate" mask="####-##-##" label="Visit End Date *"
-                :rules="[dateValidation]">
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                      <q-date v-model="visitEndDate" mask="YYYY-MM-DD">
-                        <div class="row items-center justify-end">
-                          <q-btn v-close-popup label="Close" color="primary" flat />
-                        </div>
-                      </q-date>
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-    </div>
-    <p v-if="visitBeginningDate.value === '' || visitEndDate === ''" style="opacity: 0.5;">please fill both forms!</p>
-    
-  </div>
-  
-
-  <div>
-    <q-table class="table" style="height: auto" flat bordered title="Stock" :rows="filteredData" :columns="columns"
-    row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols" :grid="$q.platform.is.mobile">
-
-    <template v-slot:top-right>
-      <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="fltr_text" placeholder="Search">
-        <template v-slot:append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-      <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter = !show_filter" flat />
-    </template>
-    <!-- Custom "update" and "delete" columns -->
-    <template v-if="!$q.platform.is.mobile" v-slot:body-cell-update="props">
-      <!-- Assuming props.row.update contains the update action -->
-      <q-td :props="props">
-        <q-btn flat round color="primary" icon="edit" @click="handleUpdate(props.row)" />
-      </q-td>
-    </template>
-
-    <template v-if="!$q.platform.is.mobile" v-slot:body-cell-view="props">
-      <!-- Assuming props.row.delete contains the delete action -->
-      <q-td :props="props">
-        <q-btn flat round color="primary" icon="delete" @click="handleView(props.row)" />
-      </q-td>
-    </template>
-
-
-    <template v-if="$q.platform.is.mobile" v-slot:item="props">
-      <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-        <q-card flat bordered>
-          <q-card-section class="text-left">
-            <div class="row">
-              <span class="col-12  text-weight-bolder   ">
-                Supplier Name
-              </span>
-              <span class="col-12">
-                {{ props.row.name }}
-              </span>
-            </div>
-            <div class="row">
-              <span class="col-12  text-weight-bolder">
-                date
-              </span>
-              <span class="col-12">
-                {{ props.row.date }}
-              </span>
-            </div>
-
-
-            <div class="row q-mt-sm">
-              <span class="col-6 text-center">
-                <q-btn color="primary" label="Edit" icon="edit" size="sm" @click="handleUpdate(props.row)" />
-              </span>
-              <span class="col-6 text-center">
-                <q-btn color="positive" label="view" icon="visibility" size="sm" @click="handleView(props.row)" />
-              </span>
-            </div>
-          </q-card-section>
-        </q-card>
+  <LoadingComponent v-if="isLoading" />
+  <q-card class="q-pa-md q-ma-sm">
+    <div class="row  items-center">
+      <div class="col-12 col-md-4">
+        <q-input filled ref="visitDateRef" v-model="visitBeginningDate" mask="####-##-##" label="Start Date"
+          :rules="[dateValidation]">
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-date v-model="visitBeginningDate" mask="YYYY-MM-DD">
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </q-input>
       </div>
-    </template>
+      <div class="col-1" />
+      <div class="col-12 col-md-4">
+        <q-input filled ref="visitDateRef" v-model="visitEndDate" mask="####-##-##" label="End Date"
+          :rules="[dateValidation]">
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-date v-model="visitEndDate" mask="YYYY-MM-DD">
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </q-input>
+      </div>
+      <div class="col-1" />
+      <div class="col-12 col-md-1 text-right ">
+        <q-btn color="primary" push label="Apply" @click="handleDate" :disable="!validateDate" />
+      </div>
 
-  </q-table>
-  </div>
 
-  <q-dialog ref="dialogRef">
-    
-    <q-card class="q-dialog-plugin">
 
-      <q-card-actions align="right">
-        <q-btn color="primary" flat push label="OK" @click="onDialogOK" />
-      </q-card-actions>
 
-      <q-card-section>
-        <label for="id" :class="$q.platform.is.mobile?'label':''">Name</label>
-        <q-input
-          v-model="rowData.name"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-          disable=""
-        />
-      </q-card-section>
-      
-      <q-card-section>
-        <label for="id" :class="$q.platform.is.mobile?'label':''">date</label>
-        <q-input
-          v-model="rowData.date"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-          disable=""
-        />
-      </q-card-section>
-      <q-card-section>
-        <label for="id" :class="$q.platform.is.mobile?'label':''">items</label>
-        <q-card v-for="(item,index) of rowData.items " :key="index" class="q-mt-sm">
-          <q-card-section>
-            <label for="id" :class="$q.platform.is.mobile?'label':''">Serial Number</label>
-        <q-input
-          v-model="item.serialNumber"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-          disable=""
-        />
-          </q-card-section>
-          <q-card-section>
-            <label for="id" :class="$q.platform.is.mobile?'label':''">Name</label>
-        <q-input
-          v-model="item.name"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-          disable=""
-        />
-          </q-card-section>
-          <q-card-section>
-            <label for="id" :class="$q.platform.is.mobile?'label':''">Category</label>
-        <q-input
-          v-model="item.category"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-          disable=""
-        />
-          </q-card-section>
-          <q-card-section>
-            <label for="id" :class="$q.platform.is.mobile?'label':''">Quantity</label>
-        <q-input
-          v-model="item.quantity"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-          disable=""
-        />
-          </q-card-section>
-        </q-card>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
+    </div>
 
-  <q-dialog ref="dialogRefEdit">
-    
-    <q-card class="q-dialog-plugin">
 
-      <q-card-actions align="right">
-        <q-btn color="primary" flat push label="OK" @click="onDialogUpdateOK" />
-        <q-btn color="primary" flat push label="cancel" @click="onDialogCancel" />
-      </q-card-actions>
+    <div>
+      <q-table class="q-mt-sm" flat bordered title="Purchase Invoices" :rows="filteredData" :columns="columns"
+        row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols" :grid="$q.platform.is.mobile">
 
-      <q-card-section>
-        <label for="id" :class="$q.platform.is.mobile?'label':''">Name</label>
-        <q-input
-          v-model="rowData.name"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-        />
-      </q-card-section>
-      
-      <q-card-section>
-        <label for="id" :class="$q.platform.is.mobile?'label':''">date</label>
-        <q-input
-          v-model="rowData.date"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-          disable=""
-        />
-      </q-card-section>
-      <q-card-section>
-        <label for="id" :class="$q.platform.is.mobile?'label':''">items</label>
-        <q-card v-for="(item,index) of rowData.items " :key="index" class="q-mt-sm">
-          <!-- <q-card-actions>
+        <template v-slot:top-right>
+          <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="fltr_text" placeholder="Search">
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+          <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter = !show_filter" flat />
+        </template>
+        <!-- Custom "update" and "delete" columns -->
+        <template v-if="!$q.platform.is.mobile" v-slot:body-cell-update="props">
+          <!-- Assuming props.row.update contains the update action -->
+          <q-td :props="props">
+            <q-btn flat round color="primary" icon="edit" @click="handleUpdate(props.row)" />
+          </q-td>
+        </template>
+
+        <template v-if="!$q.platform.is.mobile" v-slot:body-cell-view="props">
+          <!-- Assuming props.row.delete contains the delete action -->
+          <q-td :props="props">
+            <q-btn flat round color="primary" icon="visibility" @click="handleView(props.row)" />
+          </q-td>
+        </template>
+
+
+        <template v-if="$q.platform.is.mobile" v-slot:item="props">
+          <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+            <q-card flat bordered>
+              <q-card-section class="text-left">
+                <div class="row">
+                  <span class="col-12  text-weight-bolder   ">
+                    Supplier Name
+                  </span>
+                  <span class="col-12">
+                    {{ props.row.name }}
+                  </span>
+                </div>
+                <div class="row">
+                  <span class="col-12  text-weight-bolder">
+                    Invoice Date
+                  </span>
+                  <span class="col-12">
+                    {{ props.row.date }}
+                  </span>
+                </div>
+
+
+                <div class="row q-mt-sm">
+                  <span class="col-6 text-center">
+                    <q-btn color="primary" label="Edit" icon="edit" size="sm" @click="handleUpdate(props.row)" />
+                  </span>
+                  <span class="col-6 text-center">
+                    <q-btn color="positive" label="view" icon="visibility" size="sm" @click="handleView(props.row)" />
+                  </span>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </template>
+
+      </q-table>
+    </div>
+
+    <q-dialog ref="dialogRef">
+
+      <q-card class="q-dialog-plugin">
+
+        <q-card-actions align="right">
+          <q-btn color="primary" flat push label="OK" @click="onDialogOK" />
+        </q-card-actions>
+
+        <q-card-section>
+          <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">Name</label>
+          <q-input v-model="rowData.name" debounce="500" filled class="q-mb-sm" disable="" />
+        </q-card-section>
+
+        <q-card-section>
+          <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">date</label>
+          <q-input v-model="rowData.date" debounce="500" filled class="q-mb-sm" disable="" />
+        </q-card-section>
+        <q-card-section>
+          <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">items</label>
+          <q-card v-for="(item, index) of rowData.items " :key="index" class="q-mt-sm">
+            <q-card-section>
+              <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">Serial Number</label>
+              <q-input v-model="item.serialNumber" debounce="500" filled class="q-mb-sm" disable="" />
+            </q-card-section>
+            <q-card-section>
+              <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">Name</label>
+              <q-input v-model="item.name" debounce="500" filled class="q-mb-sm" disable="" />
+            </q-card-section>
+            <q-card-section>
+              <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">Category</label>
+              <q-input v-model="item.category" debounce="500" filled class="q-mb-sm" disable="" />
+            </q-card-section>
+            <q-card-section>
+              <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">Quantity</label>
+              <q-input v-model="item.quantity" debounce="500" filled class="q-mb-sm" disable="" />
+            </q-card-section>
+          </q-card>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog ref="dialogRefEdit">
+
+      <q-card class="q-dialog-plugin">
+
+        <q-card-actions align="right">
+          <q-btn color="primary" flat push label="OK" @click="onDialogUpdateOK" />
+          <q-btn color="primary" flat push label="cancel" @click="onDialogCancel" />
+        </q-card-actions>
+
+        <q-card-section>
+          <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">Name</label>
+          <q-input v-model="rowData.name" debounce="500" filled class="q-mb-sm" />
+        </q-card-section>
+
+        <q-card-section>
+          <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">date</label>
+          <q-input filled ref="visitDateRef" v-model="rowData.date" mask="####-##-##" label="Start Date"
+            :rules="[dateValidation]">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-date v-model="rowData.date" mask="YYYY-MM-DD">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </q-card-section>
+        <q-card-section>
+          <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">items</label>
+          <q-card v-for="(item, index) of rowData.items " :key="index" class="q-mt-sm">
+            <!-- <q-card-actions>
             <q-btn flat round color="negative" icon="delete" @click="DeleteItemFromInvoice(item)" />
           </q-card-actions> -->
-          <q-card-section>
-            <label for="id" :class="$q.platform.is.mobile?'label':''">Serial Number</label>
-        <q-input
-          v-model="item.serialNumber"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-          disable=""
-        />
-          </q-card-section>
-          <q-card-section>
-            <label for="id" :class="$q.platform.is.mobile?'label':''">Name</label>
-        <q-input
-          v-model="item.name"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-          disable=""
-        />
-          </q-card-section>
-          <q-card-section>
-            <label for="id" :class="$q.platform.is.mobile?'label':''">Category</label>
-        <q-input
-          v-model="item.category"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-          disable=""
-        />
-          </q-card-section>
-          <q-card-section>
-            <label for="id" :class="$q.platform.is.mobile?'label':''">Quantity</label>
-        <q-input
-          v-model="item.quantity"
-          debounce="500"
-          filled
-          class="q-mb-sm"
-        />
-          </q-card-section>
-        </q-card>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
-  <button @click="check">check</button>
+            <q-card-section>
+              <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">Serial Number</label>
+              <q-input v-model="item.serialNumber" debounce="500" filled class="q-mb-sm" disable="" />
+            </q-card-section>
+            <q-card-section>
+              <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">Name</label>
+              <q-input v-model="item.name" debounce="500" filled class="q-mb-sm" disable="" />
+            </q-card-section>
+            <q-card-section>
+              <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">Category</label>
+              <q-input v-model="item.category" debounce="500" filled class="q-mb-sm" disable="" />
+            </q-card-section>
+            <q-card-section>
+              <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">Quantity</label>
+              <q-input v-model="item.quantity" debounce="500" filled class="q-mb-sm" />
+            </q-card-section>
+          </q-card>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+    <button @click="check">check</button>
+  </q-card>
 </template>
 
 <script setup>
@@ -280,8 +231,9 @@ defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
-const check = () =>{
+const check = () => {
   console.log(rowsInvoice.value);
+  console.log(editedRow.value);
 }
 const store = useStore();
 
@@ -298,57 +250,61 @@ const visitEndDate = ref("");
 
 //rows
 const rowsStock = ref([{
-      name:'test',
-      category:'reactor',
-      serialNumber: 40,
-      quantity: 25,
-      id:1
-    },
-    {
-      name:'test1',
-      category:'reactor1',
-      serialNumber: 42,
-      quantity: 30,
-      id:2
-    }])
+  name: 'test',
+  category: 'reactor',
+  serialNumber: 40,
+  quantity: 25,
+  id: 1
+},
+{
+  name: 'test1',
+  category: 'reactor1',
+  serialNumber: 42,
+  quantity: 30,
+  id: 2
+}])
 
 
 const rowsInvoice = ref([
   {
-    id:1,
+    id: 1,
     name: 'test',
-    date:'2023-09-24',
-    items:[
+    date: '2023-09-24',
+    items: [
       {
-      name:'test',
-      category:'reactor',
-      serialNumber: 40,
-      quantity: 20,
-      id:1
-    },
-    {
-      name:'test1',
-      category:'reactor1',
-      serialNumber: 42,
-      quantity: 23,
-      id:2
-    }
-  ]
-  }
+        name: 'test',
+        category: 'reactor',
+        serialNumber: 40,
+        quantity: 20,
+        id: 1
+      },
+      {
+        name: 'test1',
+        category: 'reactor1',
+        serialNumber: 42,
+        quantity: 23,
+        id: 2
+      }
+    ]
+  },
+  
 ])
+const editedRow = ref(rowsInvoice.value)
+
+
 
 //columns
-const visibleCols = [ 'name', 'date',  'update', 'view']
+const visibleCols = ['name', 'date', 'update', 'view']
 const columns = [
   {
     name: 'id',
     field: 'id'
   },
   {
-    name:'date',
-    field:'date',
-    label:'date',
-    align:'left'
+    name: 'date',
+    field: 'date',
+    label: 'Invoice Date',
+    align: 'center'
   },
   {
     name: "name",
@@ -356,20 +312,17 @@ const columns = [
     field: "name",
     align: "left",
   },
-  {
-    name:'items',
-    label:'items',
-    field:'items',
-    align:'left'
-  },
-  { name: "update", label: "update", field: null, align: "center", },
-  { name: "view", label: "view", field: null, align: "center" },
+
+  { name: "update", label: "Update", field: null, align: "center", },
+  { name: "view", label: "View", field: null, align: "center" },
 ];
+
+
 
 //search bar
 const fltr_text = ref("");
 const show_filter = ref(false);
- 
+
 //dialog
 const dialogRef = ref(null)
 let rowData = ref([])
@@ -401,220 +354,89 @@ const handleUpdate = (row) => {
 }
 
 const onDialogUpdateOK = async () => {
-  let check = true
- for(const updatedRow of rowData.value.items) {
-  let rowInvoice = rowsInvoice.value.find((row) => row.id === rowData.value.id)
-  
-    let updatedIdQuantity = updatedRow.id
-    //updated quantity
-    let updatedQuantity = updatedRow.quantity
-    let rowInvoiceItem = rowInvoice.items.find((row) => row.id === updatedIdQuantity )
-    //base quantity
-    let rowInvoiceItemQuantity = rowInvoiceItem.quantity;
-    //stock qty
-    let stockItem = rowsStock.value.find((row) => row.id === updatedIdQuantity)
-    let qty =   updatedQuantity-rowInvoiceItemQuantity;
-    console.log('row :' + rowInvoiceItemQuantity);
-    console.log('row2: ' + updatedQuantity);
-    let test = cloneDeep(stockItem.quantity);
-    test +=qty;
-    console.log(test);
-    if(test < 0) {
-      await $q.dialog({
-        color:"red-5",
-        textColor:"white",
-        icon:'warning',
-        message:"quantity exceed tht of the stock for" + updatedRow.name
-      }).onOk(() => {
-        updatedQuantity = 0;
-      
-      console.log('work');
-      return
-      })
-      check = false;
-    } else {
-      stockItem.quantity +=qty;
-      rowInvoiceItem.quantity = updatedQuantity
-      console.log('thi is' +rowInvoiceItemQuantity);
-      console.log(rowsStock.value);
-      // updateStock(updatedRow.id);
-      // updateInvoice();
 
-    
+  let check = true
+  if (date.isValid(rowData.value.date)) {
+    for (const updatedRow of rowData.value.items) {
+      let rowInvoice = rowsInvoice.value.find((row) => row.id === rowData.value.id)
+
+      let updatedIdQuantity = updatedRow.id
+      //updated quantity
+      let updatedQuantity = updatedRow.quantity
+      let rowInvoiceItem = rowInvoice.items.find((row) => row.id === updatedIdQuantity)
+      //base quantity
+      let rowInvoiceItemQuantity = rowInvoiceItem.quantity;
+      //stock qty
+      let stockItem = rowsStock.value.find((row) => row.id === updatedIdQuantity)
+      let qty =  updatedQuantity-rowInvoiceItemQuantity ;
+      console.log('row :' + rowInvoiceItemQuantity);
+      console.log('row2: ' + updatedQuantity);
+      let test = cloneDeep(stockItem.quantity);
+      test += qty;
+      console.log(test);
+      if (test < 0) {
+        await $q.dialog({
+          color: "red-5",
+          textColor: "white",
+          icon: 'warning',
+          message: "quantity exceed tht of the stock for " + updatedRow.name
+        }).onOk(() => {
+          updatedQuantity = 0;
+
+          console.log('work');
+          return
+        })
+        check = false;
+      } else {
+        stockItem.quantity += qty;
+        rowInvoiceItem.quantity = updatedQuantity
+
+        rowInvoice.date = rowData.value.date
+        console.log('thi is' + rowInvoiceItemQuantity);
+        // updateStock(updatedRow.id);
+        // updateInvoice();
+      }
+    }
+  } else {
+    $q.dialog({
+      color: "red-5",
+      textColor: "white",
+      message: "please enter a valid date"
+    })
+    check = false
   }
- }
- if(!check){
-  return;
- }  else {
-  dialogRefEdit.value.hide();
- }
+
+  if (!check) {
+    return;
+  } else {
+    dialogRefEdit.value.hide();
+  }
 
 }
 
-// const updateStock = async (id) => {
-//   const item = rowsStock.value.find((item) => item.id === id);
-//   const body = {
-//     name:item.name,
-//     category:item.category,
-//     serialNumber:item.serialNumber,
-//     quantity:item.quantity,
-//     id:item.id,
-//   }
-//   let api
-//   setIsLoading(true)
-//   try{
-//   const resp = fetch(api,{
-//     method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           'Accept': 'application/json'
-//         },
-//         body
-//   })
-//   if (!resp.ok) {
-//         resp = await resp.text();
-//         $q.notify({
-//           color: "red-5",
-//           textColor: "white",
-//           icon: "warning",
-//           message: resp,
-//         });
-//       }
-
-
-//       else {
-//         resp = await resp.json();
-
-//       }
-//   } catch(err) {
-//      console.log(err);
-//   } finally{setIsLoading(false)}
-// }
-
-// const updateInvoice = async () => {
-//   const body = {
-//     item:rowsInvoice.value
-//   }
-//   let api
-//   setIsLoading(true)
-//   try{
-//   const resp = fetch(api,{
-//     method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           'Accept': 'application/json'
-//         },
-//         body
-//   })
-//   if (!resp.ok) {
-//         resp = await resp.text();
-//         $q.notify({
-//           color: "red-5",
-//           textColor: "white",
-//           icon: "warning",
-//           message: resp,
-//         });
-//       }
-
-
-//       else {
-//         resp = await resp.json();
-
-//       }
-//   } catch(err) {
-//      console.log(err);
-//   } finally{setIsLoading(false)}
-// }
-
-
-// const DeleteItemFromInvoice =  (item) => {
-//   const id = rowData.value.id;
-//   const rowInvoice = rowsInvoice.value.find((row) => row.id === id);
-//   const rowInvoiceItem = rowInvoice.items.find((row) => row.id === item.id);
-//   const rowInvoiceItemIndex = rowInvoice.items.findIndex((row) => row.id === item.id);
-//   console.log('test' +rowInvoiceItemIndex)
-//   const qty = item.quantity;
-//    $q.dialog({
-//     color:"red-5",
-//     textColor:'white',
-//     icon:"warning",
-//     message:"are you sure you eant to delete this item?"
-//   }).onOk(() => {
-//     rowInvoice.items.splice(rowInvoiceItemIndex, 1);
-//     const findStockItem = rowsStock.value.find((row) => row.id === item.id);
-//     findStockItem.quantity +=qty
-//     console.log(rowInvoice.items);
-//   })
-// }
-
-// const search = () => {
-//   filteredData.value = rowsInvoice.value.filter((row) => {
-//     return row.date >= visitBeginningDate.value && row.date <= visitEndDate.value;
-//    });
-// }
-
-// const getStockData = async () => {
-//   try{
-//     setIsLoading(true);
-//     let resp = await fetch(`${ENV.HomeURL}/items/getItems`, { method: 'get', headers: { 'Accept': 'application/json' } });
-//     if(!resp.ok){
-//       resp = resp.text();
-//       $q.dialog({
-//         color:"red-5",
-//         textColor:"white",
-//         icon:"alert",
-//         message:resp
-//       })
-//     } else {
-//       resp = await resp.json();
-//       rowsStock.value = resp;
-//     }
-//   } catch(err) {
-//     console.log(err);
-//   } finally {
-//     setIsLoading(true)
-//   }
-// }
-
-// const getInvoiceData = async () => {
-//   try{
-//     setIsLoading(true);
-//     let resp = await fetch(`${ENV.HomeURL}/invoice/getSalesInvoice`, { method: 'get', headers: { 'Accept': 'application/json' } });
-//     if(!resp.ok){
-//       resp = resp.text();
-//       $q.dialog({
-//         color:"red-5",
-//         textColor:"white",
-//         icon:"alert",
-//         message:resp
-//       })
-//     } else {
-//       resp = await resp.json();
-//       rowsInvoice.value = resp;
-//     }
-//   } catch(err) {
-//     console.log(err);
-//   } finally {
-//     setIsLoading(true)
-//   }
-// }
-
-
+const handleDate = () => {
+  if(date.isValid(visitBeginningDate.value) && date.isValid(visitEndDate.value))
+      editedRow.value = rowsInvoice.value.filter((row) => row.date >= visitBeginningDate.value && row.date <= visitEndDate.value);
+}
 
 //computed
 const filteredData = computed(() => {
   let data;
-  data = rowsInvoice.value.filter((row) => {
-    return  ((row.date >= visitBeginningDate.value && row.date <= visitEndDate.value) && visitBeginningDate.value !== 'Please Enter A Valid Date');
-  });
+  data = editedRow.value;
   if (fltr_text.value === '') {
 
-return cloneDeep(data)
-}
-else {
+    return cloneDeep(data)
+  }
+  else {
+    return customTableSearch(fltr_text.value, data)
+  }
+})
 
-return customTableSearch(fltr_text.value, data)
-}
+const validateDate = computed(() => {
+  if(date.isValid(visitBeginningDate.value) && date.isValid(visitEndDate.value)){
+    return true
+  }
+  return false
 })
 
 
@@ -629,23 +451,19 @@ watch(
     newSelected.forEach((row) => {
       console.log(row.items);
     });
-  },{deep:true}
+  }, { deep: true }
 );
 
 </script>
 
 <style scoped>
-.date{
-  display: flex;
-  justify-content: space-between;
-}
-
-.button{
+.button {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.label{
+
+.label {
   display: block;
 
 }

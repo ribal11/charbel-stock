@@ -37,7 +37,7 @@
       </div>
       <div class="col-1" />
       <div class="col-12 col-md-1 text-right ">
-        <q-btn color="primary" push label="Apply" />
+        <q-btn color="primary" push label="Apply" @click="handleDate" :disable="!validateDate" />
       </div>
 
 
@@ -169,7 +169,20 @@
 
         <q-card-section>
           <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">date</label>
-          <q-input v-model="rowData.date" debounce="500" filled class="q-mb-sm" disable="" />
+          <q-input filled ref="visitDateRef" v-model="rowData.date" mask="####-##-##" label="Start Date"
+            :rules="[dateValidation]">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-date v-model="rowData.date" mask="YYYY-MM-DD">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
         </q-card-section>
         <q-card-section>
           <label for="id" :class="$q.platform.is.mobile ? 'label' : ''">items</label>
@@ -220,6 +233,7 @@ defineEmits([
 
 const check = () => {
   console.log(rowsInvoice.value);
+  console.log(editedRow.value);
 }
 const store = useStore();
 
@@ -272,8 +286,10 @@ const rowsInvoice = ref([
         id: 2
       }
     ]
-  }
+  },
+  
 ])
+const editedRow = ref(rowsInvoice.value)
 
 
 
@@ -338,47 +354,58 @@ const handleUpdate = (row) => {
 }
 
 const onDialogUpdateOK = async () => {
+
   let check = true
-  for (const updatedRow of rowData.value.items) {
-    let rowInvoice = rowsInvoice.value.find((row) => row.id === rowData.value.id)
+  if (date.isValid(rowData.value.date)) {
+    for (const updatedRow of rowData.value.items) {
+      let rowInvoice = rowsInvoice.value.find((row) => row.id === rowData.value.id)
 
-    let updatedIdQuantity = updatedRow.id
-    //updated quantity
-    let updatedQuantity = updatedRow.quantity
-    let rowInvoiceItem = rowInvoice.items.find((row) => row.id === updatedIdQuantity)
-    //base quantity
-    let rowInvoiceItemQuantity = rowInvoiceItem.quantity;
-    //stock qty
-    let stockItem = rowsStock.value.find((row) => row.id === updatedIdQuantity)
-    let qty = rowInvoiceItemQuantity - updatedQuantity;
-    console.log('row :' + rowInvoiceItemQuantity);
-    console.log('row2: ' + updatedQuantity);
-    let test = cloneDeep(stockItem.quantity);
-    test += qty;
-    console.log(test);
-    if (test < 0) {
-      await $q.dialog({
-        color: "red-5",
-        textColor: "white",
-        icon: 'warning',
-        message: "quantity exceed tht of the stock for" + updatedRow.name
-      }).onOk(() => {
-        updatedQuantity = 0;
+      let updatedIdQuantity = updatedRow.id
+      //updated quantity
+      let updatedQuantity = updatedRow.quantity
+      let rowInvoiceItem = rowInvoice.items.find((row) => row.id === updatedIdQuantity)
+      //base quantity
+      let rowInvoiceItemQuantity = rowInvoiceItem.quantity;
+      //stock qty
+      let stockItem = rowsStock.value.find((row) => row.id === updatedIdQuantity)
+      let qty = rowInvoiceItemQuantity - updatedQuantity;
+      console.log('row :' + rowInvoiceItemQuantity);
+      console.log('row2: ' + updatedQuantity);
+      let test = cloneDeep(stockItem.quantity);
+      test += qty;
+      console.log(test);
+      if (test < 0) {
+        await $q.dialog({
+          color: "red-5",
+          textColor: "white",
+          icon: 'warning',
+          message: "quantity exceed tht of the stock for " + updatedRow.name
+        }).onOk(() => {
+          updatedQuantity = 0;
 
-        console.log('work');
-        return
-      })
-      check = false;
-    } else {
-      stockItem.quantity += qty;
-      rowInvoiceItem.quantity = updatedQuantity
-      console.log('thi is' + rowInvoiceItemQuantity);
-      // updateStock(updatedRow.id);
-      // updateInvoice();
+          console.log('work');
+          return
+        })
+        check = false;
+      } else {
+        stockItem.quantity += qty;
+        rowInvoiceItem.quantity = updatedQuantity
 
-
+        rowInvoice.date = rowData.value.date
+        console.log('thi is' + rowInvoiceItemQuantity);
+        // updateStock(updatedRow.id);
+        // updateInvoice();
+      }
     }
+  } else {
+    $q.dialog({
+      color: "red-5",
+      textColor: "white",
+      message: "please enter a valid date"
+    })
+    check = false
   }
+
   if (!check) {
     return;
   } else {
@@ -387,10 +414,15 @@ const onDialogUpdateOK = async () => {
 
 }
 
+const handleDate = () => {
+  if(date.isValid(visitBeginningDate.value) && date.isValid(visitEndDate.value))
+      editedRow.value = rowsInvoice.value.filter((row) => row.date >= visitBeginningDate.value && row.date <= visitEndDate.value);
+}
+
 //computed
 const filteredData = computed(() => {
   let data;
-  data = rowsInvoice.value;
+  data = editedRow.value;
   if (fltr_text.value === '') {
 
     return cloneDeep(data)
@@ -398,6 +430,13 @@ const filteredData = computed(() => {
   else {
     return customTableSearch(fltr_text.value, data)
   }
+})
+
+const validateDate = computed(() => {
+  if(date.isValid(visitBeginningDate.value) && date.isValid(visitEndDate.value)){
+    return true
+  }
+  return false
 })
 
 
