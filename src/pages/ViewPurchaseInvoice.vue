@@ -438,12 +438,153 @@ const validateDate = computed(() => {
   }
   return false
 })
+// const updateStock = async (id) => {
+//   const item = rowsStock.value.find((item) => item.id === id);
+//   const body = {
+//     name:item.name,
+//     category:item.category,
+//     serialNumber:item.serialNumber,
+//     quantity:item.quantity,
+//     id:item.id,
+//   }
+//   let api
+//   setIsLoading(true)
+//   try{
+//   const resp = fetch(api,{
+//     method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Accept': 'application/json'
+//         },
+//         body
+//   })
+//   if (!resp.ok) {
+//         resp = await resp.text();
+//         $q.notify({
+//           color: "red-5",
+//           textColor: "white",
+//           icon: "warning",
+//           message: resp,
+//         });
+//       }
 
 
-// onMounted(async () => {
-//   await getStockData();
-//   await getInvoiceData()
-// })
+//       else {
+//         resp = await resp.json();
+
+//       }
+//   } catch(err) {
+//      console.log(err);
+//   } finally{setIsLoading(false)}
+// }
+
+// const updateInvoice = async () => {
+//   const body = {
+//     item:rowsInvoice.value
+//   }
+//   let api
+//   setIsLoading(true)
+//   try{
+//   const resp = fetch(api,{
+//     method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Accept': 'application/json'
+//         },
+//         body
+//   })
+//   if (!resp.ok) {
+//         resp = await resp.text();
+//         $q.notify({
+//           color: "red-5",
+//           textColor: "white",
+//           icon: "warning",
+//           message: resp,
+//         });
+//       }
+
+
+//       else {
+//         resp = await resp.json();
+
+//       }
+//   } catch(err) {
+//      console.log(err);
+//   } finally{setIsLoading(false)}
+// }
+
+
+// const DeleteItemFromInvoice =  (item) => {
+//   const id = rowData.value.id;
+//   const rowInvoice = rowsInvoice.value.find((row) => row.id === id);
+//   const rowInvoiceItem = rowInvoice.items.find((row) => row.id === item.id);
+//   const rowInvoiceItemIndex = rowInvoice.items.findIndex((row) => row.id === item.id);
+//   console.log('test' +rowInvoiceItemIndex)
+//   const qty = item.quantity;
+//    $q.dialog({
+//     color:"red-5",
+//     textColor:'white',
+//     icon:"warning",
+//     message:"are you sure you eant to delete this item?"
+//   }).onOk(() => {
+//     rowInvoice.items.splice(rowInvoiceItemIndex, 1);
+//     const findStockItem = rowsStock.value.find((row) => row.id === item.id);
+//     findStockItem.quantity +=qty
+//     console.log(rowInvoice.items);
+//   })
+// }
+
+// const search = () => {
+//   filteredData.value = rowsInvoice.value.filter((row) => {
+//     return row.date >= visitBeginningDate.value && row.date <= visitEndDate.value;
+//    });
+// }
+
+// const getStockData = async () => {
+//   try{
+//     setIsLoading(true);
+//     let resp = await fetch(`${ENV.HomeURL}/items/getItems`, { method: 'get', headers: { 'Accept': 'application/json' } });
+//     if(!resp.ok){
+//       resp = resp.text();
+//       $q.dialog({
+//         color:"red-5",
+//         textColor:"white",
+//         icon:"alert",
+//         message:resp
+//       })
+//     } else {
+//       resp = await resp.json();
+//       rowsStock.value = resp;
+//     }
+//   } catch(err) {
+//     console.log(err);
+//   } finally {
+//     setIsLoading(true)
+//   }
+// }
+
+// const getInvoiceData = async () => {
+//   try{
+//     setIsLoading(true);
+//     let resp = await fetch(`${ENV.HomeURL}/invoice/getSalesInvoice`, { method: 'get', headers: { 'Accept': 'application/json' } });
+//     if(!resp.ok){
+//       resp = resp.text();
+//       $q.dialog({
+//         color:"red-5",
+//         textColor:"white",
+//         icon:"alert",
+//         message:resp
+//       })
+//     } else {
+//       resp = await resp.json();
+//       rowsInvoice.value = resp;
+//     }
+//   } catch(err) {
+//     console.log(err);
+//   } finally {
+//     setIsLoading(true)
+//   }
+// }
 
 watch(
   () => rowsInvoice.value,
