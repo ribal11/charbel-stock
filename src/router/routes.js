@@ -21,13 +21,13 @@ const routes = [
 
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'home', component: () => import('pages/IndexPage.vue') },
+      { path: '', name: 'home', component: () => import('pages/StockItem/StockView.vue') },
       { path: 'edit/:id', props: true, component: () => import('pages/EditItem.vue') },
       { path: '/home/add', component: () => import('pages/AddItem.vue') },
-      { path: '/home/check', name: 'bill', component: () => import('pages/SalesInvoice.vue') },
+      { path: '/home/check', name: 'bill', component: () => import('pages/SalesInvoice/SalesInvoice.vue') },
       { path: '/home/buy', name: 'buy', component: () => import('pages/PurchaseInvoice.vue') },
-      { path: '/home/salesInvoices', name: 'salesInvoices', component: () => import('pages/ViewSalesInvoice.vue')},
-      { path: '/home/purchaseInvoice' , name: 'purchaseInvoice', component: () => import('pages/ViewPurchaseInvoice.vue')}
+      { path: '/home/salesInvoices', name: 'salesInvoices', component: () => import('pages/ViewSalesInvoice.vue') },
+      { path: '/home/purchaseInvoice', name: 'purchaseInvoice', component: () => import('pages/ViewPurchaseInvoice.vue') }
 
     ]
   },

@@ -1,1 +1,42 @@
 // app global css in SCSS form
+.dimensions-on-dialog {
+
+  min-width: 100% !important;
+  min-height: 65% !important;
+}
+.dimensions-on-dialog-bigger {
+
+  min-width: 100% !important;
+  min-height: 100% !important;
+}
+
+.dimensions-on-dialog-fixed{
+  min-width: 800px !important;
+  min-height: 65% !important;
+}
+
+.dimensions-on-dialog-buttons-on-bottom {
+
+position: absolute;
+bottom: 0px;
+width: 95%;
+margin-top:5px
+
+}
+.cardTitle {
+  background-color: #FFFFFF;
+  padding-left: 0%;
+  padding-top: 32px;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 2rem;
+  letter-spacing: 0.0125em;
+  padding: 24px 24px;
+  text-align: center;
+
+}
+.cardTitleSticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}

@@ -103,7 +103,7 @@
 <script setup>
 
 import { computed, onMounted, ref } from "vue";
-import { onBeforeRouteUpdate, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useQuasar } from "quasar";
 import ENV from "src/helpers/globals";
 
