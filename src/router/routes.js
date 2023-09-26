@@ -26,7 +26,7 @@ const routes = [
       { path: '/home/add', component: () => import('pages/AddItem.vue') },
       { path: '/home/check', name: 'bill', component: () => import('pages/SalesInvoice/SalesInvoice.vue') },
       { path: '/home/buy', name: 'buy', component: () => import('pages/PurchaseInvoice.vue') },
-      { path: '/home/salesInvoices', name: 'salesInvoices', component: () => import('pages/ViewSalesInvoice.vue') },
+      { path: '/home/salesInvoices', name: 'salesInvoices', component: () => import('pages/SalesInvoice/ViewSalesInvoice.vue') },
       { path: '/home/purchaseInvoice', name: 'purchaseInvoice', component: () => import('pages/ViewPurchaseInvoice.vue') }
 
     ]

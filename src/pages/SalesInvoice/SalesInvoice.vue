@@ -1,7 +1,8 @@
 //add edit here and create dd dialog for delete in index
 
 <template>
-  <q-card class="q-ma-sm">
+  <q-card
+    :class="props.componentProps ? `${$q.platform.is.mobile ? 'dimensions-on-dialog' : 'dimensions-on-dialog-fixed'}` : 'q-ma-sm'">
 
     <div class="row justify-around">
       <div class="col-12 col-sm-4 q-ml-sm q-mt-md">
@@ -29,7 +30,7 @@
 
 
     <q-table class="q-mt-md" style="height: auto" flat bordered :rows="dataRows" :columns="columns"
-      :grid="$q.platform.is.mobile" row-key="index" virtual-scroll :rows-per-page-options="[0]">
+      :grid="$q.platform.is.mobile" row-key="index" :rows-per-page-options="[0]">
       <!-- Custom "update" and "delete" columns -->
 
 
@@ -130,8 +131,16 @@ import ENV from "src/helpers/globals";
 //emits for the dialog
 defineEmits([...useDialogPluginComponent.emits]);
 
+const props = defineProps({
+  onDialogOK: null,
+  onDialogCancel: null,
+  onDialogHide: null,
+  componentProps: null
+
+})
+
 const router = useRouter();
-const { dialogRef, onDialogHide } = useDialogPluginComponent();
+
 
 const $q = useQuasar();
 
@@ -324,13 +333,15 @@ const onApply = async (e) => {
         message: "Item Added Successfully",
         timeout: 2000
       });
-      name.value = ''
-      invoiceDate.value = ''
-      dataRows.value = []
 
-
-
-
+      if (props.componentProps) {
+        props.componentProps.onDialogOK()
+      }
+      else {
+        name.value = ''
+        invoiceDate.value = ''
+        dataRows.value = []
+      }
     }
 
 

@@ -7,9 +7,6 @@
 
   </div>
 
-
-
-
   <q-table class="table" style="height: auto" flat bordered title="Stock" :rows="filteredData" :columns="columns"
     row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols" :grid="$q.platform.is.mobile">
 
