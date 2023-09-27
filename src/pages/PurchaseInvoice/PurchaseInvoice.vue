@@ -350,7 +350,7 @@ const onApply = async (e) => {
       "id": props.componentProps?.invid,
       "client": name.value,
       "date": invoiceDate.value,
-      "type": "S",
+      "type": "P",
       "items": dataRows.value.map(e => {
         return {
           itemid: e.id,
