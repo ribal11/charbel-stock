@@ -119,6 +119,8 @@ import { useStore } from "src/stores/store";
 import { storeToRefs } from "pinia";
 import { cloneDeep } from "lodash";
 import { customTableSearch } from "src/helpers/utils";
+import DialogComponent from 'src/components/DialogComponent.vue';
+import SalesInvoice from './SalesInvoice.vue';
 
 
 
@@ -227,6 +229,48 @@ const fetchData = async () => {
 
 }
 
+
+const handleUpdate = (row) => {
+  $q.dialog({
+    component: DialogComponent,
+    componentProps: {
+      componentToRender: SalesInvoice, componentToRenderProps: {
+        invid: row.id,
+        mode: 'edit'
+      }, persistant: true
+    },
+    ok: false, cancel: false
+
+  }).onOk(data => {
+    fetchData()
+
+  }).onCancel(() => {
+    console.log('>>>> Cancel')
+  }).onDismiss(() => {
+    // console.log('I am triggered on both OK and Cancel')
+  })
+}
+
+const handleView = (row) => {
+  $q.dialog({
+    component: DialogComponent,
+    componentProps: {
+      componentToRender: SalesInvoice, componentToRenderProps: {
+        invid: row.id,
+        mode: 'view'
+      }, persistant: true
+    },
+    ok: false, cancel: false
+
+  }).onOk(data => {
+    fetchData()
+
+  }).onCancel(() => {
+    console.log('>>>> Cancel')
+  }).onDismiss(() => {
+    // console.log('I am triggered on both OK and Cancel')
+  })
+}
 </script>
 
 <style scoped>
