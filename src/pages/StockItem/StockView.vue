@@ -1,14 +1,33 @@
 <template>
   <LoadingComponent v-if="isLoading" />
-  <div class="row justify-end">
-    <div class="col-6 col-sm-3 text-right">
+  <div class="row justify-around">
+
+    <div class="col-6  q-pl-xs text-left align-middle" style="position: relative;">
+      <q-btn-dropdown color="primary" label="Filter" style="position:absolute; top:50%;transform: translateY(-50%);">
+        <q-list>
+          <q-item clickable v-close-popup @click="filterClicked">
+            <q-item-section>
+              <q-item-label>Quantity</q-item-label>
+            </q-item-section>
+          </q-item>
+
+        </q-list>
+      </q-btn-dropdown>
+
+    </div>
+    <div class="col-6  text-right">
       <q-btn color="primary" label="Add New Item" class="q-my-sm q-mr-sm" @click="addItem" />
     </div>
 
   </div>
-
+  <div>
+    <q-chip removable v-model="showfilterchip" @remove="qtyfilter = null" color="primary" text-color="white"
+      icon="filter_alt">
+      {{ `Quantity < ${qtyfilter}` }} </q-chip>
+  </div>
   <q-table class="table" style="height: auto" flat bordered title="Stock" :rows="filteredData" :columns="columns"
-    row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols" :grid="$q.platform.is.mobile">
+    row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols" :grid="$q.platform.is.mobile"
+    binary-state-sort>
 
     <template v-slot:top-right>
       <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="fltr_text" placeholder="Search">
@@ -99,7 +118,7 @@
 </template>
 <script setup>
 
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from 'vue-router';
 import { useQuasar } from "quasar";
 import ENV from "src/helpers/globals";
@@ -129,7 +148,8 @@ const visibleCols = ['serno', 'cat', 'name', 'qty', 'supp', 'update', 'delete']
 const columns = [
   {
     name: 'id',
-    field: 'id'
+    field: 'id',
+    sortable: true
   },
 
   {
@@ -137,31 +157,68 @@ const columns = [
     align: "center",
     label: "Item Serial Number",
     field: "serno",
+    sortable: true
   },
   {
     name: "cat",
     label: "Item Category",
     field: "cat",
     align: "center",
+    sortable: true
   },
   {
     name: "name",
     label: "Item Name",
     field: "name",
     align: "left",
+    sortable: true
   },
-  { name: "qty", label: "Item Qty", field: "qty", align: "center" },
+  { name: "qty", label: "Item Qty", field: "qty", align: "center", sortable: true },
   {
     name: "supp",
     label: "Item Supplier",
     field: "supp",
     align: "center",
+    sortable: true
   },
   { name: "update", label: "update", field: null, align: "center", },
   { name: "delete", label: "delete", field: null, align: "center" },
 ];
 
 const rows = ref([]);
+const qtyfilter = ref(null);
+const showfilterchip = ref(false)
+
+watch(() => qtyfilter.value, (newV, oldV) => {
+  if (newV !== null)
+    showfilterchip.value = true;
+  fetchData()
+})
+
+const filterClicked = () => {
+  $q.dialog({
+    title: 'Quantity Less Than',
+    // message: 'Please type a value between 0 and 10:',
+    prompt: {
+      model: qtyfilter.value,
+      type: 'number',
+
+      // native attributes:
+      min: 1,
+      step: 1
+    },
+    cancel: true,
+    persistent: true
+  }).onOk(data => {
+    qtyfilter.value = data;
+
+
+  }).onCancel(() => {
+    // console.log('>>>> Cancel')
+  }).onDismiss(() => {
+    // console.log('I am triggered on both OK and Cancel')
+  })
+}
 
 function handleDelete(row) {
   $q.dialog({
@@ -201,7 +258,7 @@ const fetchData = async () => {
   try {
     setIsLoading(true);
 
-    let resp = await fetch(`${ENV.HomeURL}/items/getItems`, { method: 'get', headers: { 'Accept': 'application/json' } });
+    let resp = await fetch(`${ENV.HomeURL}/items/getItems${qtyfilter.value !== null ? '?minqty=' + qtyfilter.value : ''}`, { method: 'get', headers: { 'Accept': 'application/json' } });
 
     if (!resp.ok) {
       resp = await resp.text();

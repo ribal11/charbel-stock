@@ -2,7 +2,7 @@
   <LoadingComponent v-if="isLoading" />
   <q-card class="q-pa-md q-ma-sm">
     <div class="cardTitle cardTitleSticky">
-      Sales Invoices
+      Purchase Invoices
     </div>
     <div class="row  items-center">
       <div class="col-12 col-md-4">
@@ -75,7 +75,7 @@
               <q-card-section class="text-left">
                 <div class="row">
                   <span class="col-12  text-weight-bolder   ">
-                    Client Name
+                    Supplier Name
                   </span>
                   <span class="col-12">
                     {{ props.row.name }}
@@ -120,7 +120,7 @@ import { storeToRefs } from "pinia";
 import { cloneDeep } from "lodash";
 import { customTableSearch } from "src/helpers/utils";
 import DialogComponent from 'src/components/DialogComponent.vue';
-import SalesInvoice from './SalesInvoice.vue';
+import PurchaseInvoice from './PurchaseInvoice.vue';
 
 
 
@@ -154,7 +154,7 @@ const columns = [
   },
   {
     name: "name",
-    label: "Client Name",
+    label: "Supplier Name",
     field: "name",
     align: "left",
   },
@@ -199,7 +199,7 @@ const fetchData = async () => {
     else {
       uri += `&blablabla=''`
     }
-    uri += `&type='S'`
+    uri += `&type='P'`
     console.log(uri)
 
 
@@ -235,7 +235,7 @@ const handleUpdate = (row) => {
   $q.dialog({
     component: DialogComponent,
     componentProps: {
-      componentToRender: SalesInvoice, componentToRenderProps: {
+      componentToRender: PurchaseInvoice, componentToRenderProps: {
         invid: row.id,
         mode: 'edit'
       }, persistant: true
@@ -256,7 +256,7 @@ const handleView = (row) => {
   $q.dialog({
     component: DialogComponent,
     componentProps: {
-      componentToRender: SalesInvoice, componentToRenderProps: {
+      componentToRender: PurchaseInvoice, componentToRenderProps: {
         invid: row.id,
         mode: 'view'
       }, persistant: true
