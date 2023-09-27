@@ -1,14 +1,15 @@
 //add edit here and create dd dialog for delete in index
 
 <template>
-  <q-card
-    :class="props.componentProps ? `${$q.platform.is.mobile ? 'dimensions-on-dialog' : 'dimensions-on-dialog-fixed'}` : 'q-ma-sm'">
+  <q-card :class="`${props.componentProps ? 'dimensions-on-dialog' : ''} 'q-ma-sm'`">
+    <q-btn v-if="props.componentProps" icon="close" flat class="q-mt-xs" style="float: right;"
+      @click="props.onDialogCancel" />
 
     <div class="row justify-around">
       <div class="col-12 col-sm-4 q-ml-sm q-mt-md">
         <q-input outlined v-model="name" placeholder="Client name" />
       </div>
-      <div class="col-12 col-sm-4 q-ml-sm  q-mt-md">
+      <div class="col-12 col-sm-4  q-mt-md q-px-sm">
         <q-input filled ref="visitDateRef" v-model="invoiceDate" mask="####-##-##" label="Invoice Date">
           <template v-slot:append>
             <q-icon name=" event" class="cursor-pointer">
@@ -23,24 +24,26 @@
           </template>
         </q-input>
       </div>
-      <div class="col-12 col-sm-2 q-ml-sm  q-mt-md">
+      <div v-if="!readOnly" class="col-12 col-sm-2 q-ml-sm  q-mt-md">
         <q-btn color="primary" label="Add Item" class="q-mr-md" @click="addItem" />
       </div>
     </div>
 
 
     <q-table class="q-mt-md" style="height: auto" flat bordered :rows="dataRows" :columns="columns"
-      :grid="$q.platform.is.mobile" row-key="index" :rows-per-page-options="[0]">
+      :grid="$q.platform.is.mobile" row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols">
       <!-- Custom "update" and "delete" columns -->
 
 
       <template v-slot:body-cell-qty="props">
         <!-- Assuming props.row.delete contains the delete action -->
         <q-td :props="props">
-          <q-btn flat icon-right="edit" color="primary" @click="$ev => editQty(props.row)" :label="props.row.qty" />
+          <q-btn v-if="!readOnly" flat icon-right="edit" color="primary" @click="$ev => editQty(props.row)"
+            :label="props.row.qty" />
+          <span v-else>{{ props.row.qty }}</span>
         </q-td>
       </template>
-      <template v-slot:body-cell-delete="props">
+      <template v-if="!readOnly" v-slot:body-cell-delete="props">
         <!-- Assuming props.row.delete contains the delete action -->
         <q-td :props="props">
           <q-btn flat round color="primary" icon="delete" @click="$ev => handleDelete(props.row)" />
@@ -87,8 +90,9 @@
                   Quantity
                 </span>
                 <span class="col-12">
-                  <q-btn flat icon-right="edit" color="primary" @click="$ev => editQty(props.row)"
+                  <q-btn v-if="!readOnly" flat icon-right="edit" color="primary" @click="$ev => editQty(props.row)"
                     :label="props.row.qty" />
+                  <span v-else>{{ props.row.qty }}</span>
                 </span>
               </div>
               <div class="row">
@@ -110,7 +114,7 @@
 
 
     <div class="row justify-center q-my-sm ">
-      <q-btn class="col-6" push color="primary" v-if="dataRows.length > 0" @click="onApply">
+      <q-btn class="col-6" push color="primary" v-if="!readOnly && dataRows.length > 0" @click="onApply">
         Save
       </q-btn>
     </div>
@@ -149,8 +153,14 @@ const store = useStore();
 const { isLoading } = storeToRefs(store);
 const { setIsLoading } = store;
 
+
+const visibleCols = ['serno', 'cat', 'name', 'qty', 'supp', 'delete']
 //column of the table client items
 const columns = [
+  {
+    name: 'id',
+    field: 'id'
+  },
   {
     name: "serno",
     align: "center",
@@ -184,9 +194,55 @@ const columns = [
 const dataRows = ref([]);
 
 const name = ref("");
+const readOnly = ref(false);
 
 
 const invoiceDate = ref(null)
+
+onMounted(() => {
+  if (props.componentProps?.invid) {
+    fetchData()
+    readOnly.value = (props.componentProps.mode === 'view')
+  }
+})
+
+const fetchData = async () => {
+  try {
+    setIsLoading(true);
+
+    let uri = `${ENV.HomeURL}/invoice/getInvDetails?invid=${props.componentProps.invid}`
+
+    let resp = await fetch(uri, { method: 'get', headers: { 'Accept': 'application/json' } });
+
+    if (!resp.ok) {
+      resp = await resp.text();
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: resp,
+      });
+    }
+    else {
+      resp = await resp.json();
+      name.value = resp.header.client;
+      invoiceDate.value = resp.header.date;
+
+
+      dataRows.value = resp.details;
+    }
+
+
+  }
+  catch (err) {
+    console.log(err);
+  }
+  finally {
+    setIsLoading(false);
+  }
+
+}
+
 
 
 function addItem() {
@@ -291,6 +347,7 @@ const onApply = async (e) => {
     }
 
     const body = {
+      "id": props.componentProps?.invid,
       "client": name.value,
       "date": invoiceDate.value,
       "type": "S",
@@ -330,12 +387,12 @@ const onApply = async (e) => {
         color: "positive",
         type: 'positive',
         textColor: "white",
-        message: "Item Added Successfully",
+        message: "Invoice Saved Successfully",
         timeout: 2000
       });
 
-      if (props.componentProps) {
-        props.componentProps.onDialogOK()
+      if (props.onDialogOK) {
+        props.onDialogOK()
       }
       else {
         name.value = ''
