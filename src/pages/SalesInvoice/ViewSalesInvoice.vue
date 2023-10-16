@@ -69,9 +69,18 @@
             <q-btn flat round color="primary" icon="visibility" @click="handleView(props.row)" />
           </q-td>
         </template>
+
+        <template v-if="!$q.platform.is.mobile" v-slot:body-cell-delete="props">
+          <q-td :props="props">
+            <q-btn flat round color="red" icon="delete" @click="handleDelete(props.row)" />
+          </q-td>
+        </template>
         <template v-if="$q.platform.is.mobile" v-slot:item="props">
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
             <q-card flat bordered>
+              <div style="display: flex; justify-content: flex-end;">
+                <q-btn flat round color="red" icon="delete" @click="handleDelete(props.row)" />
+              </div>
               <q-card-section class="text-left">
                 <div class="row">
                   <span class="col-12  text-weight-bolder   ">
@@ -112,7 +121,7 @@
 
 <script setup>
 import { date, useQuasar } from 'quasar';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, handleError, onMounted, reactive, ref, watch } from 'vue';
 import ENV from "src/helpers/globals";
 import LoadingComponent from "src/components/LoadingComponent.vue";
 import { useStore } from "src/stores/store";
@@ -121,6 +130,7 @@ import { cloneDeep } from "lodash";
 import { customTableSearch } from "src/helpers/utils";
 import DialogComponent from 'src/components/DialogComponent.vue';
 import SalesInvoice from './SalesInvoice.vue';
+import { data } from 'autoprefixer';
 
 
 
@@ -140,7 +150,7 @@ const invoiceEndDate = ref("");
 
 const rowsInvoice = ref([])
 //columns
-const visibleCols = ['name', 'date', 'update', 'view']
+const visibleCols = ['name', 'date', 'update', 'view', 'delete']
 const columns = [
   {
     name: 'id',
@@ -161,6 +171,7 @@ const columns = [
 
   { name: "update", label: "Update", field: null, align: "center", },
   { name: "view", label: "View", field: null, align: "center" },
+  { name: "delete", label: "Delete",  field: null, align: "center"},
 ];
 
 
@@ -271,6 +282,60 @@ const handleView = (row) => {
   }).onDismiss(() => {
     // console.log('I am triggered on both OK and Cancel')
   })
+}
+
+const handleDelete = (row) => {
+  $q.dialog({
+    title:'confirm',
+    message:'are you sure you want to delete this invoice',
+    cancel:true
+  }).onOk(() => {
+    deleteInvoice(row.id)
+  }).onCancel(() => {
+    console.log('cancel');
+  })
+}
+
+const deleteInvoice = async (rowId) => {
+  try{
+    
+    const data = {
+      id: rowId,
+      type: 'S'
+    }
+    setIsLoading(true);
+    let uri = `${ENV.HomeURL}/invoice/deleteInvoice`
+     let resp = await fetch(uri,{
+      method:'post',
+      headers:{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body:JSON.stringify(data)
+     })
+
+     if(!resp.ok){
+      resp = await resp.text;
+      $q.notify({
+        color: 'red-5',
+        textColor: 'white',
+        icon: 'warning',
+        message: resp
+      })
+     } else {
+      $q.notify({
+        color: 'positive',
+        type: 'positive',
+        textColor: 'white',
+        message: 'Invoice Deleted Successfull'
+      })
+      fetchData();
+     }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setIsLoading(false);
+  }
 }
 </script>
 

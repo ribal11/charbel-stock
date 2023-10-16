@@ -131,6 +131,7 @@ import LoadingComponent from "src/components/LoadingComponent.vue";
 import { useStore } from "src/stores/store";
 import { storeToRefs } from "pinia";
 import ENV from "src/helpers/globals";
+import { data } from "autoprefixer";
 
 //emits for the dialog
 defineEmits([...useDialogPluginComponent.emits]);
@@ -360,6 +361,7 @@ const onApply = async (e) => {
 
 
     }
+    console.log(body.items);
     setIsLoading(true)
     let uri = `${ENV.HomeURL}/invoice/upsert`;
 

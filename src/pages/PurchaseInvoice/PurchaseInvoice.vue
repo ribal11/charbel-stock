@@ -191,7 +191,8 @@ const columns = [
 ];
 
 //items of the client
-const dataRows = ref([]);
+const dataRows = ref([
+]);
 
 const name = ref("");
 const readOnly = ref(false);
@@ -315,6 +316,7 @@ const handleDelete = (row) => {
   }).onOk(() => {
     let idx = dataRows.value.findIndex(e => e.id === row.id);
     dataRows.value.splice(idx, 1);
+    console.log(dataRows.value);
   })
     .onCancel(() => {
       // console.log('>>>> Cancel')
@@ -357,9 +359,8 @@ const onApply = async (e) => {
           qty: e.qty
         }
       })
-
-
     }
+    console.log(body.items);
     setIsLoading(true)
     let uri = `${ENV.HomeURL}/invoice/upsert`;
 
@@ -400,7 +401,6 @@ const onApply = async (e) => {
         dataRows.value = []
       }
     }
-
 
   }
   catch (error) {
