@@ -174,6 +174,7 @@ const columns = [
 
   { name: "update", label: "Update", field: null, align: "center", },
   { name: "view", label: "View", field: null, align: "center" },
+  { name: "delete", label: "Delete", field:null, align: "center"}
 ];
 
 //search bar
