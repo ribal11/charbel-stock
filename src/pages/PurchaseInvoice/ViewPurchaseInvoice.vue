@@ -153,7 +153,7 @@ const rowsInvoice = ref([
 
 ])
 //columns
-const visibleCols = ['name', 'date', 'update', 'view']
+const visibleCols = ['name', 'date', 'update', 'view', 'delete']
 const columns = [
   {
     name: 'id',
