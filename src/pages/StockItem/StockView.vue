@@ -37,6 +37,12 @@
       </q-input>
       <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter = !show_filter" flat />
     </template>
+    <template v-if="!$q.platform.is.mobile" v-slot:body-cell-name="props">
+      <q-td :props="props">
+        {{ props.row.name }}
+        <p v-if="props.row.qty < 70" class="text-red-7">please refill your stock</p>
+      </q-td>
+    </template>
     <!-- Custom "update" and "delete" columns -->
     <template v-if="!$q.platform.is.mobile" v-slot:body-cell-update="props">
       <!-- Assuming props.row.update contains the update action -->

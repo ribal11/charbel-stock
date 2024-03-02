@@ -325,7 +325,7 @@ const handleDelete = (row) => {
     })
 }
 
-const onApply = async (e) => {
+const onApply = async () => {
   try {
 
     if (!name.value) {
@@ -347,32 +347,58 @@ const onApply = async (e) => {
       });
       return
     }
+    if (!props.componentProps?.invid) {
+      const body = {
+        "id": props.componentProps?.invid,
+        "client": name.value,
+        "date": invoiceDate.value,
+        "type": "P",
+        "items": dataRows.value.map(e => {
+          return {
+            itemid: e.id,
+            qty: e.qty
+          }
+        })
+      }
+      console.log(body.items);
+      setIsLoading(true)
+      let uri = `${ENV.HomeURL}/invoice/upsert`;
 
-    const body = {
-      "id": props.componentProps?.invid,
-      "client": name.value,
-      "date": invoiceDate.value,
-      "type": "P",
-      "items": dataRows.value.map(e => {
-        return {
-          itemid: e.id,
-          qty: e.qty
-        }
-      })
+      var resp = await fetch(uri, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+    } else {
+      const body = {
+        "id": props.componentProps.invid,
+        "client": name.value,
+        "date": invoiceDate.value,
+        "type": "P",
+        "items": dataRows.value.map(e => {
+          return {
+            itemid: e.id,
+            qty: e.qty
+          }
+        })
+      }
+      console.log("the items are:");
+      console.log(body.items);
+      setIsLoading(true)
+      let uri = `${ENV.HomeURL}/invoice/upsertUpdate`;
+
+      var resp = await fetch(uri, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
     }
-    console.log(body.items);
-    setIsLoading(true)
-    let uri = `${ENV.HomeURL}/invoice/upsert`;
-
-    let resp = await fetch(uri, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
-
 
     if (!resp.ok) {
       resp = await resp.text();

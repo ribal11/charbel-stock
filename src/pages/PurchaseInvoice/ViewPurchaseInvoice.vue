@@ -62,6 +62,16 @@
             <q-btn flat round color="primary" icon="edit" @click="handleUpdate(props.row)" />
           </q-td>
         </template>
+        <template v-if="!$q.platform.is.mobile" v-slot:body-cell-arrived="props">
+          <q-td :props="props">
+
+            <div class="q-pa-md">
+              <q-checkbox v-model="props.row.state" true-value=1 false-value=0 @click="change(props.row)" />
+            </div>
+
+          </q-td>
+
+        </template>
 
         <template v-if="!$q.platform.is.mobile" v-slot:body-cell-view="props">
           <!-- Assuming props.row.delete contains the delete action -->
@@ -69,7 +79,7 @@
             <q-btn flat round color="primary" icon="visibility" @click="handleView(props.row)" />
           </q-td>
         </template>
-        
+
         <template v-if="!$q.platform.is.mobile" v-slot:body-cell-delete="props">
           <q-td :props="props">
             <q-btn flat round color="red" icon="delete" @click="handleDelete(props.row)" />
@@ -80,10 +90,10 @@
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
             <q-card flat bordered>
               <div style="display: flex; justify-content: flex-end;">
-                  <q-btn flat round color="red" icon="delete" @click="handleDelete(props.row)" />
+                <q-btn flat round color="red" icon="delete" @click="handleDelete(props.row)" />
               </div>
               <q-card-section class="text-left">
-                
+
                 <div class="row">
                   <span class="col-12  text-weight-bolder   ">
                     Supplier Name
@@ -117,12 +127,16 @@
 
       </q-table>
     </div>
-
+    <div class="row justify-center q-my-sm ">
+      <q-btn class="col-6" push color="primary" v-if="saveChanges" @click="onApply()">
+        Save
+      </q-btn>
+    </div>
   </q-card>
 </template>
 
 <script setup>
-import { date, useQuasar } from 'quasar';
+import { date, useQuasar, extend, is } from 'quasar';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import ENV from "src/helpers/globals";
 import LoadingComponent from "src/components/LoadingComponent.vue";
@@ -133,7 +147,7 @@ import { customTableSearch } from "src/helpers/utils";
 import DialogComponent from 'src/components/DialogComponent.vue';
 import PurchaseInvoice from './PurchaseInvoice.vue';
 
-
+const test = ref(0)
 
 const store = useStore();
 
@@ -141,6 +155,12 @@ const { isLoading } = storeToRefs(store);
 const { setIsLoading } = store;
 const $q = useQuasar();
 
+const change = (row) => {
+  const item = rowsInvoice.value.find((val) => val.id === row.id);
+  if (item.state == 0) { item.state = "1"; }
+  else item.state = "0";
+
+}
 
 //date variables
 const dateValidation = v => v === '____-__-__' ||
@@ -152,8 +172,10 @@ const invoiceEndDate = ref("");
 const rowsInvoice = ref([
 
 ])
+
+let origRowInoice = ref([]);
 //columns
-const visibleCols = ['name', 'date', 'update', 'view', 'delete']
+const visibleCols = ['name', 'date', 'update', 'view', 'delete', 'arrived']
 const columns = [
   {
     name: 'id',
@@ -174,7 +196,8 @@ const columns = [
 
   { name: "update", label: "Update", field: null, align: "center", },
   { name: "view", label: "View", field: null, align: "center" },
-  { name: "delete", label: "Delete", field:null, align: "center"}
+  { name: "delete", label: "Delete", field: null, align: "center" },
+  { name: "arrived", label: "Arrived", field: null, align: 'center' }
 ];
 
 //search bar
@@ -229,6 +252,7 @@ const fetchData = async () => {
     else {
       resp = await resp.json();
       rowsInvoice.value = resp;
+      origRowInoice.value = extend(true, [], rowsInvoice.value)
     }
 
 
@@ -241,6 +265,8 @@ const fetchData = async () => {
   }
 
 }
+
+
 
 
 const handleUpdate = (row) => {
@@ -286,10 +312,11 @@ const handleView = (row) => {
 }
 
 const handleDelete = (row) => {
+  console.log(row.state);
   $q.dialog({
-    title:'confirm',
-    message:'are you sure you want to delete this invoice',
-    cancel:true
+    title: 'confirm',
+    message: 'are you sure you want to delete this invoice',
+    cancel: true
   }).onOk(() => {
     deleteInvoice(row.id)
   }).onCancel(() => {
@@ -298,24 +325,24 @@ const handleDelete = (row) => {
 }
 
 const deleteInvoice = async (rowId) => {
-  try{
-    
+  try {
+
     const data = {
       id: rowId,
       type: 'P'
     }
     setIsLoading(true);
     let uri = `${ENV.HomeURL}/invoice/deleteInvoice`
-     let resp = await fetch(uri,{
-      method:'post',
-      headers:{
+    let resp = await fetch(uri, {
+      method: 'post',
+      headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body:JSON.stringify(data)
-     })
+      body: JSON.stringify(data)
+    })
 
-     if(!resp.ok){
+    if (!resp.ok) {
       resp = await resp.text;
       $q.notify({
         color: 'red-5',
@@ -323,7 +350,7 @@ const deleteInvoice = async (rowId) => {
         icon: 'warning',
         message: resp
       })
-     } else {
+    } else {
       $q.notify({
         color: 'positive',
         type: 'positive',
@@ -331,13 +358,74 @@ const deleteInvoice = async (rowId) => {
         message: 'Invoice Deleted Successfull'
       })
       fetchData();
-     }
+    }
   } catch (err) {
     console.log(err);
   } finally {
     setIsLoading(false);
   }
 }
+
+
+const updateHeader = async (id, state) => {
+  try {
+    console.log('test');
+    const data = {
+      Hid: id,
+      Hstate: state,
+    }
+
+    setIsLoading(true);
+
+    let uri = `${ENV.HomeURL}/invoice/UpdateHeader`;
+    let resp = await fetch(uri, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    if (!resp.ok) {
+      resp = await resp.text;
+      $q.notify({
+        color: 'red-5',
+        textColor: 'white',
+        icon: 'warning',
+        message: resp
+      })
+    } else {
+      $q.notify({
+        color: 'positive',
+        type: 'positive',
+        textColor: 'white',
+        message: 'Invoice Updated Successfull'
+      })
+
+    }
+  } catch (ex) {
+    console.log(ex);
+  } finally {
+    setIsLoading(false)
+  }
+}
+const onApply = async () => {
+  for (let i = 0; i < rowsInvoice.value.length; i++) {
+    if (!is.deepEqual(origRowInoice.value[i], rowsInvoice.value[i])) {
+      await updateHeader(rowsInvoice.value[i].id, rowsInvoice.value[i].state);
+      rowsInvoice.value = rowsInvoice.value.filter((value) => value.id !== rowsInvoice.value[i].id)
+    }
+  }
+  clone();
+}
+
+const clone = () => {
+  origRowInoice.value = extend(true, [], rowsInvoice.value);
+}
+
+const saveChanges = computed(() => {
+  return !is.deepEqual(origRowInoice.value, rowsInvoice.value)
+})
 </script>
 
 <style scoped>

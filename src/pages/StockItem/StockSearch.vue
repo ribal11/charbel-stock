@@ -111,7 +111,7 @@ const fltr_text = ref('');
 const selectedRow = ref([]);
 
 
-const visibleCols = ['serno', 'cat', 'name', 'qty', 'supp', 'update', 'delete']
+const visibleCols = ['serno', 'cat', 'name', 'qty', 'supp']
 const columns = [
   {
     name: 'id',
@@ -143,8 +143,7 @@ const columns = [
     field: "supp",
     align: "center",
   },
-  { name: "update", label: "update", field: null, align: "center", },
-  { name: "delete", label: "delete", field: null, align: "center" },
+
 ];
 
 const rows = ref([]);
