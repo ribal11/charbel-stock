@@ -17,8 +17,18 @@
       <label for="qty">Quantity</label>
       <q-input square outlined v-model="item.qty" id="qty" type="number" min="0" />
 
-      <label for="supp">Supplier</label>
-      <q-input square outlined v-model="item.supplier" id="supp" />
+      <label for="3Month">3 Month Sale</label>
+      <q-input square outlined v-model="item.threeMonthSale" id="3Month" />
+      <label for="6Month">6 Month Sale</label>
+      <q-input square outlined v-model="item.sixmonthSale" id="6Month" />
+      <label for="year">Year Sale</label>
+      <q-input square id="year" outlined v-model="item.YearSale" />
+      <label for="3Min">Min stock 3 Months</label>
+      <q-input square id="3Min" outlined v-model="item.minThreeMonth" />
+      <label for="6Min">Min stock 6 Months</label>
+      <q-input square id="6Min" outlined v-model="item.minSixMonth" />
+      <label for="minYear">Min stock year</label>
+      <q-input square id="minYear" outlined v-model="item.minYear" />
     </q-card-section>
     <q-card-actions>
       <q-btn class="btn-fixed-width label" color="primary" style="width: 100%" label="Update" @click="updateItem" />
@@ -51,8 +61,13 @@ const item = ref({
   serno: "",
   category: "",
   name: "",
-  qty: 0,
-  supplier: "",
+  qty: "",
+  threeMonthSale: 0,
+  sixmonthSale: 0,
+  YearSale: 0,
+  minThreeMonth: '',
+  minSixMonth: "",
+  minYear: "",
 });
 
 
@@ -85,8 +100,13 @@ const fetchData = async () => {
         item.value.category = resp[0].cat;
         item.value.name = resp[0].name;
         item.value.qty = resp[0].qty;
-        item.value.supplier = resp[0].supp;
-
+        item.value.threeMonthSale = resp[0].threeMonth;
+        item.value.sixmonthSale = resp[0].sixMonth;
+        item.value.YearSale = resp[0].year;
+        item.value.minThreeMonth = resp[0].minThree;
+        item.value.minSixMonth = resp[0].minSix;
+        item.value.minYear = resp[0].minYear;
+        console.log(item.value.sixMonthSale);
       }
 
       // rows.value = resp;
@@ -143,25 +163,63 @@ const updateItem = async () => {
       });
       return
     }
-    else if (!item.value.supplier) {
+    else if (!item.value.threeMonthSale) {
       $q.notify({
         color: "red-5",
         textColor: "white",
         icon: "warning",
-        message: "Supplier is Missing",
+        message: "three month sale is missing",
+      });
+      return
+    } else if (!item.value.sixmonthSale) {
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: "six month sale is missing",
+      });
+      return
+    } else if (!item.value.YearSale) {
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: "year slae is missing",
+      });
+      return
+    }
+    else if (!item.value.minSixMonth) {
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: "minimum 6 month qty is missing",
+      });
+      return
+    } else if (!item.value.minYear) {
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: "minimum year qty is missing",
       });
       return
     }
 
-
+    console.log(item.value.sixmonthSale);
     const body = {
       "id": item.value.id,
       "serialno": item.value.serno,
       "category": item.value.category,
       "description": item.value.name,
       "quantity": item.value.qty,
-      "supplier": item.value.supplier
-
+      "supplier": item.value.supplier,
+      "threeMonthSale": item.value.threeMonthSale,
+      "sixMonthSale": item.value.sixmonthSale,
+      "yearSale": item.value.YearSale,
+      "minSixMonth": item.value.minSixMonth,
+      "minThreeMonth": item.value.minThreeMonth,
+      "minYear": item.value.minYear
     }
     setIsLoading(true)
     let uri = `${ENV.HomeURL}/items/updateItem`;

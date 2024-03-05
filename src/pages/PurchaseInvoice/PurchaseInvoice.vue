@@ -154,7 +154,7 @@ const { isLoading } = storeToRefs(store);
 const { setIsLoading } = store;
 
 
-const visibleCols = ['serno', 'cat', 'name', 'qty', 'supp', 'delete']
+const visibleCols = ['serno', 'cat', 'name', 'qty', 'delete']
 //column of the table client items
 const columns = [
   {
@@ -180,12 +180,7 @@ const columns = [
     align: "left",
   },
   { name: "qty", label: "Item Qty", field: "qty", align: "center" },
-  {
-    name: "supp",
-    label: "Supplier",
-    field: "supp",
-    align: "center",
-  },
+
   { name: "delete", label: "", field: "", align: "center" },
 
 ];

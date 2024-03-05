@@ -111,7 +111,7 @@ const fltr_text = ref('');
 const selectedRow = ref([]);
 
 
-const visibleCols = ['serno', 'cat', 'name', 'qty', 'supp']
+const visibleCols = ['serno', 'cat', 'name', 'qty']
 const columns = [
   {
     name: 'id',
@@ -137,12 +137,7 @@ const columns = [
     align: "left",
   },
   { name: "qty", label: "Item Qty", field: "qty", align: "center" },
-  {
-    name: "supp",
-    label: "Item Supplier",
-    field: "supp",
-    align: "center",
-  },
+
 
 ];
 

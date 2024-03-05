@@ -37,13 +37,22 @@
       </q-input>
       <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter = !show_filter" flat />
     </template>
+
     <template v-if="!$q.platform.is.mobile" v-slot:body-cell-name="props">
       <q-td :props="props">
         {{ props.row.name }}
-        <p v-if="props.row.qty < 70" class="text-red-7">please refill your stock</p>
+
       </q-td>
     </template>
+
+    <template v-if="!$q.platform.is.mobile" v-slot:body-cell-minThree="props">
+      <q-td :props="props">
+        {{ threeMonthVal(props.row) }}
+      </q-td>
+
+    </template>
     <!-- Custom "update" and "delete" columns -->
+
     <template v-if="!$q.platform.is.mobile" v-slot:body-cell-update="props">
       <!-- Assuming props.row.update contains the update action -->
       <q-td :props="props">
@@ -112,7 +121,8 @@
                 <q-btn color="primary" label="Edit" icon="edit" size="sm" @click="handleUpdate(props.row)" />
               </span>
               <span class="col-6 text-center">
-                <q-btn color="negative" label="Delete" icon="delete_outline" size="sm" @click="handleDelete(props.row)" />
+                <q-btn color="negative" label="Delete" icon="delete_outline" size="sm"
+                  @click="handleDelete(props.row)" />
               </span>
             </div>
           </q-card-section>
@@ -122,6 +132,7 @@
 
   </q-table>
 </template>
+
 <script setup>
 
 import { computed, onMounted, ref, watch } from "vue";
@@ -150,7 +161,7 @@ const pagination = ref({
   rowsPerPage: 1000,
 });
 
-const visibleCols = ['serno', 'cat', 'name', 'qty', 'supp', 'update', 'delete']
+const visibleCols = ['serno', 'cat', 'name', 'qty', 'supp', 'order', 'reserve', 'threeMonth', 'sixMonth', 'year', 'minThree', 'minSix', 'minYear', 'status', 'moq', 'allowEdit', 'update', 'delete']
 const columns = [
   {
     name: 'id',
@@ -180,13 +191,68 @@ const columns = [
     sortable: true
   },
   { name: "qty", label: "Item Qty", field: "qty", align: "center", sortable: true },
+
   {
-    name: "supp",
-    label: "Item Supplier",
-    field: "supp",
-    align: "center",
-    sortable: true
+    name: "order",
+    label: "order qty",
+    field: "order",
+    align: "center"
   },
+  {
+    name: "reserve",
+    label: "reserve qty",
+    field: "reserve",
+    align: "center"
+  },
+  {
+    name: "threeMonth",
+    label: "3 Month sale",
+    field: "threeMonth",
+    align: "center"
+  },
+  {
+    name: "sixMonth",
+    label: "6 Month sale",
+    field: "sixMonth",
+    align: "center"
+  },
+  {
+    name: "year",
+    label: "year sale",
+    field: "year",
+    align: "center"
+  },
+  {
+    name: "minThree",
+    label: "min stock 3 month",
+    field: "minThree",
+    align: "center"
+  },
+  {
+    name: "minSix",
+    label: "min stock 6 month",
+    field: "minSix",
+    align: "center"
+  },
+  {
+    name: "minYear",
+    label: "min stock year",
+    field: "minYear",
+    align: "center"
+  },
+  {
+    name: "status",
+    label: "status",
+    field: "status",
+    align: "center"
+  },
+  {
+    name: "moq",
+    label: "moq",
+    field: "moq",
+    align: "center"
+  },
+  { name: 'allowEdit', label: "allow Edit", field: null, align: "center" },
   { name: "update", label: "update", field: null, align: "center", },
   { name: "delete", label: "delete", field: null, align: "center" },
 ];
@@ -255,6 +321,11 @@ const getCols = computed(() => {
   return filteredColumns
 })
 
+const threeMonthVal = (item) => {
+  const formula = item.threeMonth / 3 * 3 + 0.2 * (item.threeMonth / 3 * 3)
+  item.minThree = formula
+  return formula
+}
 
 onMounted(() => {
   fetchData();
