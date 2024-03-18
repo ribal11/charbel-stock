@@ -34,6 +34,11 @@
       :grid="$q.platform.is.mobile" row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols">
       <!-- Custom "update" and "delete" columns -->
 
+      <template v-slot:body-cell-cat="props">
+        <q-td :props="props">
+          lamba
+        </q-td>
+      </template>
 
       <template v-slot:body-cell-qty="props">
         <!-- Assuming props.row.delete contains the delete action -->
@@ -41,6 +46,14 @@
           <q-btn v-if="!readOnly" flat icon-right="edit" color="primary" @click="$ev => editQty(props.row)"
             :label="props.row.qty" />
           <span v-else>{{ props.row.qty }}</span>
+        </q-td>
+      </template>
+
+      <template v-slot:body-cell-reserve="props">
+        <q-td :props=props>
+          <q-btn v-if="!readOnly" flat icon-right="edit" color="primary" @click="$ev => editReserve(props.row)"
+            :label="props.row.reserve" />
+          <span v-else>{{ props.row.reserve }}</span>
         </q-td>
       </template>
       <template v-if="!readOnly" v-slot:body-cell-delete="props">
@@ -154,7 +167,7 @@ const { isLoading } = storeToRefs(store);
 const { setIsLoading } = store;
 
 
-const visibleCols = ['serno', 'cat', 'name', 'qty', 'delete']
+const visibleCols = ['serno', 'cat', 'name', 'qty', 'reserve', 'delete']
 //column of the table client items
 const columns = [
   {
@@ -180,8 +193,9 @@ const columns = [
     align: "left",
   },
   { name: "qty", label: "Item Qty", field: "qty", align: "center" },
+  { name: "reserve", label: "reserveQty", field: "reserve", align: "center" },
 
-  { name: "delete", label: "", field: "", align: "center" },
+  { name: "delete", label: "delete", field: "", align: "center" },
 
 ];
 
@@ -261,7 +275,7 @@ function addItem() {
 
     data.forEach((dataObject) => {
       if (!dataRows.value.find(e => e.id === dataObject.id)) {
-        newItems.push({ ...dataObject, qty: 1 });
+        newItems.push({ ...dataObject, qty: 1, reserve: 0 });
       }
     });
     if (newItems.length > 0) {
@@ -295,6 +309,40 @@ const editQty = (row) => {
   }).onOk(data => {
     console.log(data)
     row.qty = data;
+    // console.log('>>>> OK, received', data)
+  }).onCancel(() => {
+    // console.log('>>>> Cancel')
+  }).onDismiss(() => {
+    // console.log('I am triggered on both OK and Cancel')
+  })
+}
+
+const editReserve = (row) => {
+  $q.dialog({
+    title: 'Input Reserve',
+    // message: 'Please type a value between 0 and 10:',
+    prompt: {
+      model: row.reserve,
+      type: 'number',
+
+      // native attributes:
+      min: 1,
+      step: 1
+    },
+    cancel: true,
+    persistent: true
+  }).onOk(data => {
+    console.log(row.qty + ">" + data);
+    if (Number(data) > Number(row.qty)) {
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        message: "reserve qty have to be smaller than qty",
+        icon: "warning"
+      });
+      return
+    }
+    row.reserve = data;
     // console.log('>>>> OK, received', data)
   }).onCancel(() => {
     // console.log('>>>> Cancel')
@@ -351,7 +399,8 @@ const onApply = async () => {
         "items": dataRows.value.map(e => {
           return {
             itemid: e.id,
-            qty: e.qty
+            qty: e.qty,
+            qty_reserve: e.reserve
           }
         })
       }
@@ -376,7 +425,8 @@ const onApply = async () => {
         "items": dataRows.value.map(e => {
           return {
             itemid: e.id,
-            qty: e.qty
+            qty: e.qty,
+            qty_reserve: e.reserve
           }
         })
       }

@@ -10,10 +10,8 @@
     <q-card-section>
       <label for="id">Serial No</label>
       <q-input dense square outlined v-model="item.serno" />
-      <label for="category">Category</label>
-      <q-input dense square outlined v-model="item.category" />
 
-      <label for="name">Name</label>
+      <label for="name">Description</label>
       <q-input dense square outlined v-model="item.name" />
 
 
@@ -21,8 +19,12 @@
       <label for="qty">Quantity</label>
       <q-input dense square outlined v-model="item.qty" type="number" min="0" />
 
-      <label for="supp">Supplier</label>
-      <q-input dense square outlined v-model="item.supplier" />
+      <label>three month sale</label>
+      <q-input dense square outlined v-model="item.threeMonthSale" />
+      <label>six month sale</label>
+      <q-input dense square outlined v-model="item.sixMonthSale" />
+      <label>one year sale</label>
+      <q-input dense square outlined v-model="item.oneYearSale" />
     </q-card-section>
     <q-card-actions>
       <q-btn color="primary" style="width: 100%" label="Update" @click="addItem" />
@@ -49,7 +51,9 @@ const item = ref({
   category: "",
   name: "",
   qty: "",
-  supplier: "",
+  threeMonthSale: "",
+  sixMonthSale: "",
+  oneYearSale: "",
 });
 
 onMounted(() => {
@@ -74,15 +78,7 @@ const addItem = async () => {
       return
 
     }
-    else if (!item.value.category) {
-      $q.notify({
-        color: "red-5",
-        textColor: "white",
-        icon: "warning",
-        message: "Category is Missing",
-      });
-      return
-    }
+
     else if (!item.value.name) {
       $q.notify({
         color: "red-5",
@@ -101,23 +97,43 @@ const addItem = async () => {
       });
       return
     }
-    else if (!item.value.supplier) {
+    else if (!item.value.threeMonthSale) {
       $q.notify({
         color: "red-5",
         textColor: "white",
         icon: "warning",
-        message: "Supplier is Missing",
+        message: "three month sale is Missing",
+      });
+      return
+    }
+    else if (!item.value.sixMonthSale) {
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: "six month sale is Missing",
+      });
+      return
+    }
+    else if (!item.value.oneYearSale) {
+      $q.notify({
+        color: "red-5",
+        textColor: "white",
+        icon: "warning",
+        message: "one year sale is Missing",
       });
       return
     }
 
 
+
     const body = {
       "serialno": item.value.serno,
-      "category": item.value.category,
       "description": item.value.name,
       "quantity": item.value.qty,
-      "supplier": item.value.supplier
+      "threeMonthSale": item.value.threeMonthSale,
+      "sixMonthSale": item.value.sixMonthSale,
+      "oneYearSale": item.value.oneYearSale,
 
     }
     setIsLoading(true)
@@ -205,6 +221,21 @@ const addItem = async () => {
 watch(() => item.value.qty, (newQty, oldQty) => {
   if (Number(newQty) < 0 || isNaN(newQty)) {
     item.value.qty = 0;
+  }
+})
+watch(() => item.value.threeMonthSale, (newVal, oldVal) => {
+  if (Number(newVal) < 0 || isNaN(newVal)) {
+    item.value.threeMonthSale = 0;
+  }
+})
+watch(() => item.value.sixMonthSale, (newVal, oldVal) => {
+  if (Number(newVal) < 0 || isNaN(newVal)) {
+    item.value.sixMonthSale = 0;
+  }
+})
+watch(() => item.value.qty, (newVal, oldVal) => {
+  if (Number(newVal) < 0 || isNaN(newVal)) {
+    item.value.oneYearSale = 0;
   }
 })
 </script>

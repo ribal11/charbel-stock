@@ -20,6 +20,12 @@
         </q-slide-transition>
         <q-btn label="Cancel" color="negative" flat push @click="onCancel" />
       </template>
+
+      <template v-slot:body-cell-cat="props">
+        <q-td :props="props">
+          lamba
+        </q-td>
+      </template>
       <!-- Custom "update" and "delete" columns -->
 
       <template v-if="$q.platform.is.mobile" v-slot:item="props">

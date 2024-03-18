@@ -16,18 +16,19 @@
           <q-item-section> Stock View </q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple to="/home/check" exact :class="{ 'grey': $route.name === 'bill' }">
-          <q-item-section> Sales Invoice </q-item-section>
+        <q-item clickable v-ripple to="/home/updateAll" exact :class="{ 'grey': $route.name === 'bill' }">
+          <q-item-section> upload excel </q-item-section>
         </q-item>
 
         <q-item clickable v-ripple to="/home/buy" exact :class="{ 'grey': $route.name === 'buy' }">
           <q-item-section> Purchase Invoice </q-item-section>
         </q-item>
-        <q-item clickable v-ripple to="/home/salesInvoices" exact :class="{ 'grey': $route.name === 'salesInvoices' }">
+        <!-- <q-item clickable v-ripple to="/home/salesInvoices" exact :class="{ 'grey': $route.name === 'salesInvoices' }">
           <q-item-section> View Sales Invoices </q-item-section>
-        </q-item>
+        </q-item> -->
 
-        <q-item clickable v-ripple to="/home/purchaseInvoice" exact :class="{ 'grey': $route.name === 'purchaseInvoice' }">
+        <q-item clickable v-ripple to="/home/purchaseInvoice" exact
+          :class="{ 'grey': $route.name === 'purchaseInvoice' }">
           <q-item-section> View Purchase Invoices </q-item-section>
         </q-item>
       </q-list>

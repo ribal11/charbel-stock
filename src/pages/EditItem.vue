@@ -6,7 +6,7 @@
       <div class="text-h6">Update Stock Item</div>
     </q-card-section>
     <q-card-section>
-      <label for="sn">Serial No</label>
+      <!-- <label for="sn">Serial No</label>
       <q-input square outlined v-model="item.serno" id="sn" />
       <label for="cat">Category</label>
       <q-input square outlined v-model="item.category" id="cat" />
@@ -22,7 +22,7 @@
       <label for="6Month">6 Month Sale</label>
       <q-input square outlined v-model="item.sixmonthSale" id="6Month" />
       <label for="year">Year Sale</label>
-      <q-input square id="year" outlined v-model="item.YearSale" />
+      <q-input square id="year" outlined v-model="item.YearSale" /> -->
       <label for="3Min">Min stock 3 Months</label>
       <q-input square id="3Min" outlined v-model="item.minThreeMonth" />
       <label for="6Min">Min stock 6 Months</label>
@@ -58,13 +58,6 @@ const { setIsLoading } = store;
 
 const item = ref({
   id: "",
-  serno: "",
-  category: "",
-  name: "",
-  qty: "",
-  threeMonthSale: 0,
-  sixmonthSale: 0,
-  YearSale: 0,
   minThreeMonth: '',
   minSixMonth: "",
   minYear: "",
@@ -96,13 +89,13 @@ const fetchData = async () => {
       if (resp.length > 0) {
         console.log('here')
         item.value.id = resp[0].id;
-        item.value.serno = resp[0].serno;
-        item.value.category = resp[0].cat;
-        item.value.name = resp[0].name;
-        item.value.qty = resp[0].qty;
-        item.value.threeMonthSale = resp[0].threeMonth;
-        item.value.sixmonthSale = resp[0].sixMonth;
-        item.value.YearSale = resp[0].year;
+        // item.value.serno = resp[0].serno;
+        // item.value.category = resp[0].cat;
+        // item.value.name = resp[0].name;
+        // item.value.qty = resp[0].qty;
+        // item.value.threeMonthSale = resp[0].threeMonth;
+        // item.value.sixmonthSale = resp[0].sixMonth;
+        // item.value.YearSale = resp[0].year;
         item.value.minThreeMonth = resp[0].minThree;
         item.value.minSixMonth = resp[0].minSix;
         item.value.minYear = resp[0].minYear;
@@ -126,65 +119,49 @@ const fetchData = async () => {
 const updateItem = async () => {
   try {
 
-    if (!item.value.serno) {
-      $q.notify({
-        color: "red-5",
-        textColor: "white",
-        icon: "warning",
-        message: "Serial Number is Missing",
-      });
-      return
+    // if (!item.value.serno) {
+    //   $q.notify({
+    //     color: "red-5",
+    //     textColor: "white",
+    //     icon: "warning",
+    //     message: "Serial Number is Missing",
+    //   });
+    //   return
 
-    }
-    else if (!item.value.category) {
+    // }
+    // else if (!item.value.category) {
+    //   $q.notify({
+    //     color: "red-5",
+    //     textColor: "white",
+    //     icon: "warning",
+    //     message: "Category is Missing",
+    //   });
+    //   return
+    // }
+    // else if (!item.value.name) {
+    //   $q.notify({
+    //     color: "red-5",
+    //     textColor: "white",
+    //     icon: "warning",
+    //     message: "Name is Missing",
+    //   });
+    //   return
+    // }
+    // else if (!item.value.qty) {
+    //   $q.notify({
+    //     color: "red-5",
+    //     textColor: "white",
+    //     icon: "warning",
+    //     message: "Quantity is Missing",
+    //   });
+    //   return
+    // }
+    if (!item.value.minThreeMonth) {
       $q.notify({
         color: "red-5",
         textColor: "white",
         icon: "warning",
-        message: "Category is Missing",
-      });
-      return
-    }
-    else if (!item.value.name) {
-      $q.notify({
-        color: "red-5",
-        textColor: "white",
-        icon: "warning",
-        message: "Name is Missing",
-      });
-      return
-    }
-    else if (!item.value.qty) {
-      $q.notify({
-        color: "red-5",
-        textColor: "white",
-        icon: "warning",
-        message: "Quantity is Missing",
-      });
-      return
-    }
-    else if (!item.value.threeMonthSale) {
-      $q.notify({
-        color: "red-5",
-        textColor: "white",
-        icon: "warning",
-        message: "three month sale is missing",
-      });
-      return
-    } else if (!item.value.sixmonthSale) {
-      $q.notify({
-        color: "red-5",
-        textColor: "white",
-        icon: "warning",
-        message: "six month sale is missing",
-      });
-      return
-    } else if (!item.value.YearSale) {
-      $q.notify({
-        color: "red-5",
-        textColor: "white",
-        icon: "warning",
-        message: "year slae is missing",
+        message: "minimum 3 month qty is missing",
       });
       return
     }
@@ -209,14 +186,14 @@ const updateItem = async () => {
     console.log(item.value.sixmonthSale);
     const body = {
       "id": item.value.id,
-      "serialno": item.value.serno,
-      "category": item.value.category,
-      "description": item.value.name,
-      "quantity": item.value.qty,
-      "supplier": item.value.supplier,
-      "threeMonthSale": item.value.threeMonthSale,
-      "sixMonthSale": item.value.sixmonthSale,
-      "yearSale": item.value.YearSale,
+      // "serialno": item.value.serno,
+      // "category": item.value.category,
+      // "description": item.value.name,
+      // "quantity": item.value.qty,
+      // "supplier": item.value.supplier,
+      // "threeMonthSale": item.value.threeMonthSale,
+      // "sixMonthSale": item.value.sixmonthSale,
+      // "yearSale": item.value.YearSale,
       "minSixMonth": item.value.minSixMonth,
       "minThreeMonth": item.value.minThreeMonth,
       "minYear": item.value.minYear
