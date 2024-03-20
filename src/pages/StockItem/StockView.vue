@@ -2,7 +2,7 @@
   <LoadingComponent v-if="isLoading" />
 
   <div class="row justify-around">
-    <div class="col-6 q-pl-xs text-left align-middle" style="position: relative">
+    <div class="col q-pl-xs text-left align-middle" style="position: relative">
       <q-btn-dropdown color="primary" label="Filter" style="position: absolute; top: 50%; transform: translateY(-50%)">
         <q-list>
           <q-item clickable v-close-popup @click="filterClicked">
@@ -13,7 +13,10 @@
         </q-list>
       </q-btn-dropdown>
     </div>
-    <div class="col-6 text-right">
+    <div class="col text-center">
+      <q-btn color="primary" label="export as excel" class="q-my-sm q-mr-sm" @click="transformExcel()" />
+    </div>
+    <div class="col text-right">
       <q-btn color="primary" label="Add New Item" class="q-my-sm q-mr-sm" @click="addItem" />
     </div>
   </div>
@@ -117,7 +120,8 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";
 import ENV from "src/helpers/globals";
-
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 import LoadingComponent from "src/components/LoadingComponent.vue";
 import { useStore } from "src/stores/store";
 import { storeToRefs } from "pinia";
@@ -871,6 +875,49 @@ const filteredData = computed(() => {
     return customTableSearch(fltr_text.value, rows.value);
   }
 });
+
+const transformExcel = () => {
+  // Transform data to include additional properties
+  const data = rows.value.map((val) => {
+    const threeMonthData = val.threeMonth + (val.threeMonth / 90) * 14;
+    const sixMonthData = val.sixMonth + (val.sixMonth / 180) * 14;
+    const yearData = val.year + (val.year / 360) * 14;
+    const stat = status(val);
+    // Return object with additional properties
+    return {
+      item: val.serno,
+      description: val.name,
+      stock: val.qty,
+      order: val.order,
+      reserve: val.reserve,
+      three_Month_Stock: val.threeMonth,
+      six_Month_stock: val.sixMonth,
+      year_stock: val.year,
+      minthreeMonth: threeMonthData,
+      minsixMonth: sixMonthData,
+      minYear: yearData,
+      status: stat
+    };
+  });
+
+  // Create worksheet from the transformed data
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  FileSaver.saveAs(excelBlob, 'data.xlsx');
+}
+
+
+const downloadExcel = (buffer, fileName) => {
+  const blob = new Blob([buffer], { type: 'application/octet-stream' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
 </script>
 
 <style scoped>
