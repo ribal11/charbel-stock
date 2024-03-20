@@ -2,15 +2,8 @@
   <LoadingComponent v-if="isLoading" />
 
   <div class="row justify-around">
-    <div
-      class="col-6 q-pl-xs text-left align-middle"
-      style="position: relative"
-    >
-      <q-btn-dropdown
-        color="primary"
-        label="Filter"
-        style="position: absolute; top: 50%; transform: translateY(-50%)"
-      >
+    <div class="col q-pl-xs text-left align-middle" style="position: relative">
+      <q-btn-dropdown color="primary" label="Filter" style="position: absolute; top: 50%; transform: translateY(-50%)">
         <q-list>
           <q-item clickable v-close-popup @click="filterClicked">
             <q-item-section>
@@ -20,66 +13,30 @@
         </q-list>
       </q-btn-dropdown>
     </div>
-    <div class="col-6 text-right">
-      <q-btn
-        color="primary"
-        label="Add New Item"
-        class="q-my-sm q-mr-sm"
-        @click="addItem"
-      />
+    <div class="col text-center">
+      <q-btn color="primary" label="export as excel" class="q-my-sm q-mr-sm" @click="transformExcel()" />
+    </div>
+    <div class="col text-right">
+      <q-btn color="primary" label="Add New Item" class="q-my-sm q-mr-sm" @click="addItem" />
     </div>
   </div>
 
   <div>
-    <q-chip
-      removable
-      v-model="showfilterchip"
-      @remove="qtyfilter = null"
-      color="primary"
-      text-color="white"
-      icon="filter_alt"
-    >
-      {{ `Quantity < ${qtyfilter}` }}
-    </q-chip>
+    <q-chip removable v-model="showfilterchip" @remove="qtyfilter = null" color="primary" text-color="white"
+      icon="filter_alt">
+      {{ `Quantity < ${qtyfilter}` }} </q-chip>
   </div>
 
-  <q-table
-    class="table"
-    style="height: 820px"
-    flat
-    bordered
-    title="Stock"
-    :rows="filteredData"
-    :columns="columns"
-    row-key="index"
-    :rows-per-page-options="[0]"
-    :visible-columns="visibleCols"
-    :grid="$q.platform.is.mobile"
-    binary-state-sort
-    virtual-scroll
-    v-model:pagination="pagination"
-    auto-width
-  >
+  <q-table class="table" style="height: 820px" flat bordered title="Stock" :rows="filteredData" :columns="columns"
+    row-key="index" :rows-per-page-options="[0]" :visible-columns="visibleCols" :grid="$q.platform.is.mobile"
+    binary-state-sort virtual-scroll v-model:pagination="pagination" auto-width>
     <template v-slot:top-right>
-      <q-input
-        v-if="show_filter"
-        filled
-        borderless
-        dense
-        debounce="300"
-        v-model="fltr_text"
-        placeholder="Search"
-      >
+      <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="fltr_text" placeholder="Search">
         <template v-slot:append>
           <q-icon name="search" />
         </template>
       </q-input>
-      <q-btn
-        class="q-ml-sm"
-        icon="filter_list"
-        @click="show_filter = !show_filter"
-        flat
-      />
+      <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter = !show_filter" flat />
     </template>
 
     <template v-if="!$q.platform.is.mobile" v-slot:body-cell-name="props">
@@ -96,14 +53,8 @@
 
     <template v-if="!$q.platform.is.mobile" v-slot:body-cell-qty="props">
       <q-td :props="props">
-        <q-btn
-          flat
-          icon-right="edit"
-          color="primary"
-          @click="($ev) => editQty(props.row)"
-          :label="props.row.qty"
-          class="q-pa-none"
-        />
+        <q-btn flat icon-right="edit" color="primary" @click="($ev) => editQty(props.row)" :label="props.row.qty"
+          class="q-pa-none" />
       </q-td>
     </template>
 
@@ -126,66 +77,39 @@
     </template>
 
     <template v-slot:body-cell-status="props">
-      <q-td
-        :props="props"
-        :style="{
-          backgroundColor:
-            status(props.row) == 'critical stock!'
-              ? 'red'
-              : status(props.row) == 'place an order'
-              ? 'yellow'
-              : 'white',
-        }"
-      >
+      <q-td :props="props" :style="{
+    backgroundColor:
+      status(props.row) == 'critical stock!'
+        ? 'red'
+        : status(props.row) == 'place an order'
+          ? 'yellow'
+          : 'white',
+  }">
         {{ status(props.row) }}
       </q-td>
     </template>
     <template v-slot:body-cell-moq="props">
       <q-td :props="props">
-        <q-btn
-          flat
-          icon-right="edit"
-          color="primary"
-          @click="($ev) => editMoq(props.row)"
-          :label="props.row.moq"
-          style="width: 50px"
-          class="q-pa-none"
-        />
+        <q-btn flat icon-right="edit" color="primary" @click="($ev) => editMoq(props.row)" :label="props.row.moq"
+          style="width: 50px" class="q-pa-none" />
       </q-td>
     </template>
     <template v-if="!$q.platform.is.mobile" v-slot:body-cell-allowEdit="props">
       <q-td :props="props">
-        <q-checkbox
-          v-model="props.row.allowChange"
-          true-value="1"
-          false-value="0"
-          @click="change(props.row)"
-        />
+        <q-checkbox v-model="props.row.allowChange" true-value="1" false-value="0" @click="change(props.row)" />
       </q-td>
     </template>
 
     <template v-if="!$q.platform.is.mobile" v-slot:body-cell-update="props">
       <q-td :props="props">
-        <q-btn
-          flat
-          round
-          color="primary"
-          icon="edit"
-          @click="handleUpdate(props.row)"
-          :disable="props.row.allowChange == 0"
-        />
+        <q-btn flat round color="primary" icon="edit" @click="handleUpdate(props.row)"
+          :disable="props.row.allowChange == 0" />
       </q-td>
     </template>
 
     <template v-if="!$q.platform.is.mobile" v-slot:body-cell-delete="props">
       <q-td :props="props">
-        <q-btn
-          flat
-          round
-          color="primary"
-          icon="delete"
-          @click="handleDelete(props.row)"
-        />
+        <q-btn flat round color="primary" icon="delete" @click="handleDelete(props.row)" />
       </q-td>
     </template>
   </q-table>
@@ -196,7 +120,8 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";
 import ENV from "src/helpers/globals";
-
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 import LoadingComponent from "src/components/LoadingComponent.vue";
 import { useStore } from "src/stores/store";
 import { storeToRefs } from "pinia";
@@ -799,8 +724,7 @@ const fetchData = async () => {
     setIsLoading(true);
 
     let resp = await fetch(
-      `${ENV.HomeURL}/items/getItems${
-        qtyfilter.value !== null ? "?minqty=" + qtyfilter.value : ""
+      `${ENV.HomeURL}/items/getItems${qtyfilter.value !== null ? "?minqty=" + qtyfilter.value : ""
       }`,
       { method: "get", headers: { Accept: "application/json" } }
     );
@@ -951,6 +875,49 @@ const filteredData = computed(() => {
     return customTableSearch(fltr_text.value, rows.value);
   }
 });
+
+const transformExcel = () => {
+  // Transform data to include additional properties
+  const data = rows.value.map((val) => {
+    const threeMonthData = val.threeMonth + (val.threeMonth / 90) * 14;
+    const sixMonthData = val.sixMonth + (val.sixMonth / 180) * 14;
+    const yearData = val.year + (val.year / 360) * 14;
+    const stat = status(val);
+    // Return object with additional properties
+    return {
+      item: val.serno,
+      description: val.name,
+      stock: val.qty,
+      order: val.order,
+      reserve: val.reserve,
+      three_Month_Stock: val.threeMonth,
+      six_Month_stock: val.sixMonth,
+      year_stock: val.year,
+      minthreeMonth: threeMonthData,
+      minsixMonth: sixMonthData,
+      minYear: yearData,
+      status: stat
+    };
+  });
+
+  // Create worksheet from the transformed data
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  FileSaver.saveAs(excelBlob, 'data.xlsx');
+}
+
+
+const downloadExcel = (buffer, fileName) => {
+  const blob = new Blob([buffer], { type: 'application/octet-stream' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
 </script>
 
 <style scoped>
