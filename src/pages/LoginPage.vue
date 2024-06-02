@@ -2,14 +2,19 @@
   <div class="main">
     <!-- <h1>Login</h1> -->
 
-
     <q-card>
       <loading-component v-if="isLoading" />
       <q-card-section>
         <div class="text-h4 text-center">Login</div>
       </q-card-section>
       <q-card-section>
-        <q-input outlined v-model="email" type="email" prefix="Email:" class="q-mb-md">
+        <q-input
+          outlined
+          v-model="email"
+          type="email"
+          prefix="Email:"
+          class="q-mb-md"
+        >
           <template v-slot:prepend>
             <q-icon name="mail" />
           </template>
@@ -19,21 +24,23 @@
             <q-icon name="lock" />
           </template>
         </q-input>
-        <q-btn align="center" class="btn-fixed-width label" color="primary" style="width: 100%" label="Login"
-          @click="onSubmit" />
+        <q-btn
+          align="center"
+          class="btn-fixed-width label"
+          color="primary"
+          style="width: 100%"
+          label="Login"
+          @click="onSubmit"
+        />
       </q-card-section>
-
-
     </q-card>
-
   </div>
 </template>
 
 <script setup>
-
 import { LocalStorage, useQuasar } from "quasar";
 import { reactive, ref } from "vue";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useStore } from "src/stores/store";
 import ENV from "src/helpers/globals";
@@ -46,7 +53,6 @@ const $router = useRouter();
 const $q = useQuasar();
 const email = ref("");
 const password = ref("");
-
 
 const onSubmit = async () => {
   if (!email.value || !password.value) {
@@ -63,45 +69,37 @@ const onSubmit = async () => {
       const body = JSON.stringify({
         code: email.value,
         password: password.value,
-      })
-
-      let resp = await fetch(`${ENV.HomeURL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body
       });
 
+      let resp = await fetch(`${ENV.HomeURL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body,
+      });
 
       if (!resp.ok) {
-        resp = await resp.text();
+        resp = await resp.json();
         $q.notify({
           color: "red-5",
           textColor: "white",
           icon: "warning",
           message: resp,
         });
-      }
-
-
-      else {
+      } else {
         resp = await resp.json();
         LocalStorage.set("userData", resp);
         $router.replace({ path: "/home" });
-
       }
-
     } catch (e) {
       console.log(e);
-    }
-    finally {
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   }
 };
-
 </script>
 
 <style scoped>
