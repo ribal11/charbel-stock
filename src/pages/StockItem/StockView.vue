@@ -414,6 +414,7 @@ const getCols = computed(() => {
 
 const change = async (row) => {
   const item = rows.value.find((val) => val.id === row.id);
+  console.log(item.allowChange);
   if (item.allowChange == 0) {
     item.allowChange = "1";
   } else item.allowChange = "0";
@@ -455,14 +456,28 @@ const minYearVal = (item) => {
 };
 
 const status = (item) => {
-  const formula = (item.qty + item.order - item.reserve) / item.threeMonth;
-  if (formula <= 3) {
-    return "critical stock!";
-  } else if (formula <= 4) {
-    return "place an order";
+  const formula = (item.qty + item.order - item.reserve) / item.sixMonth;
+  const formula2 = (item.qty + item.order - item.reserve) / item.threeMonth;
+  const formula3 = item.threeMonth / item.sixMonth;
+
+ if (formula3 <= 0.55) {
+    if (formula <= 0.75) {
+      return "critical stock!"
+    } else if ( formula <= 1) {
+      return "place an order"
+    } else {
+      return "stock is sufficient"
+    }
   } else {
-    return "stock are sufficient";
+    if (formula2 <= 1.5) {
+      return "critical stock!"
+    } else if ( formula2 <= 2) {
+      return "place an order"
+    } else {
+      return "stock is sufficient"
+    }
   }
+  
 };
 
 const uploadExcelFile = async (files) => {
